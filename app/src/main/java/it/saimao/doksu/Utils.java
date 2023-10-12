@@ -4,17 +4,20 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.util.DisplayMetrics;
 
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.upstream.RawResourceDataSource;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Utils {
     private static List<MediaItem> allMediaItems;
@@ -78,7 +81,7 @@ public class Utils {
         return "(" + i + ") " + titles[i - 1];
     }
 
-    public static String readLyric(Context context, int i) {
+    public static String readLyricsWithChords(Context context, int i) {
         AssetManager assets = context.getAssets();
         StringBuilder sb = new StringBuilder();
         try {
@@ -100,6 +103,32 @@ public class Utils {
         return sb.toString();
     }
 
+    public static String readLyricsOnly(Context context, int i) {
+        AssetManager assets = context.getAssets();
+        StringBuilder sb = new StringBuilder();
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(assets.open("lyrics/tmk" + i + ".txt")));
+            int i2 = 0;
+            while (true) {
+                String readLine = bufferedReader.readLine();
+                if (readLine == null) break;
+                if (readLine.matches("(\\s*([A-G](#|b|m|bm|7)?\\s*)\\s*)+")) {
+                    i2 ++;
+                    continue;
+                }
+
+                if (i2 > 0) {
+                    sb.append(readLine).append("\n");
+                }
+                i2++;
+            }
+        } catch (IOException unused) {
+        }
+        sb.append("\n\n");
+        return sb.toString();
+    }
+
+
     public static String formatToMinuteSeconds(long totalSecs) {
         long minutes = (totalSecs / 1000) / 60;
         long seconds = (totalSecs / 1000) % 60;
@@ -111,9 +140,20 @@ public class Utils {
         return ResourcesCompat.getFont(context, R.font.aj_kunheing);
     }
 
-    public int dpToPx(int dp) {
-       DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
-       return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));     
+    public static int dpToPx(Context context, int dp) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
+    private static boolean showChord;
+
+    public static boolean isShowChord(Context context) {
+        return context.getSharedPreferences("mao", 0).getBoolean("show_chord", false);
+    }
+
+    public static void setShowChord(Context context, boolean showChord) {
+        SharedPreferences.Editor edit = context.getSharedPreferences("mao", 0).edit();
+        edit.putBoolean("show_chord", showChord);
+        edit.commit();
+    }
 }

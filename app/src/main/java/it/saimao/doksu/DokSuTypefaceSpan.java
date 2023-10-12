@@ -14,8 +14,9 @@ import java.lang.reflect.Type;
 
 public class DokSuTypefaceSpan extends MetricAffectingSpan {
     private final Typeface typeface;
-    private final float textSize, letterSpacing;
-    public DokSuTypefaceSpan(Typeface typeface, float textSize, float letterSpacing) {
+    private final int textSize;
+    private final float letterSpacing;
+    public DokSuTypefaceSpan(Typeface typeface, int textSize, float letterSpacing) {
         this.typeface = typeface;
         this.textSize = textSize;
         this.letterSpacing = letterSpacing;

@@ -55,35 +55,10 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
             SpannableString title = new SpannableString("ၽဵင်းၵႂၢမ်းတုၵ်းသူး");
-            title.setSpan(new DokSuTypefaceSpan(Utils.getAjKunheingFont(this), 90, 0.1f),0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            title.setSpan(new DokSuTypefaceSpan(Utils.getAjKunheingFont(this), Utils.dpToPx(this, 34), 0.1f),0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             actionBar.setTitle(title);
         }
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-
-    private void actionBarIdForAll()
-    {
-        int titleId = 0;
-
-        titleId = getResources().getIdentifier("action_bar_title", "id", "android");
-
-        if(titleId>0)
-        {
-            // Do whatever you want ? It will work for all the versions.
-
-            // 1. Customize your fonts
-            // 2. Infact, customize your whole title TextView
-
-            TextView titleView = (TextView) findViewById(titleId);
-            titleView.setText("RedoApp");
-            titleView.setTextColor(Color.CYAN);
-        }
-    }
-
     /* access modifiers changed from: private */
     public void gotoCurrentActivity() {
         Intent intent = new Intent(this, DetailActivity.class);
@@ -115,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuItem add = menu.add("About");
         add.setCheckable(true);
-        add.setShowAsAction(2);
+        add.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         add.setIcon(R.drawable.ic_about);
         return true;
     }

@@ -9,7 +9,7 @@
     <TextSwitcher
         android:id="@+id/lyricTitle"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="75dp"
         android:gravity="center"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -33,29 +33,9 @@
                 android:padding="5dp"
                 android:text="Hello Mao! Where are you from"
                 android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:textSize="18sp" />
         </ScrollView>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left|center_vertical|center_horizontal|center"
-            android:layout_marginLeft="20dp"
-            android:src="@drawable/ic_previous"
-            android:visibility="gone"
-            app:backgroundTint="@android:color/white" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical|center_horizontal|center"
-            android:layout_marginEnd="20dp"
-            android:src="@drawable/ic_next"
-            android:visibility="gone"
-            app:backgroundTint="@android:color/white"
-            android:contentDescription="Current Song" />
     </FrameLayout>
 
     <LinearLayout

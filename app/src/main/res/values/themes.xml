@@ -5,7 +5,7 @@
         <item name="colorPrimary">@color/khamfa_secondary</item>
         <item name="colorPrimaryDark">@color/khamfa_secondary</item>
         <item name="colorAccent">@color/khamfa_secondary</item>
-        <item name="colorControlNormal">@color/white</item>
+        <item name="popupMenuBackground">@color/khamfa_primary</item>
 
     </style>
 

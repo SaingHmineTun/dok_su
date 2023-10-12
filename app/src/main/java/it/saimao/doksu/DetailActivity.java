@@ -3,12 +3,16 @@ package it.saimao.doksu;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -21,37 +25,24 @@ import android.widget.SeekBar;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewSwitcher;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.ViewCompat;
 
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.MediaMetadata;
-import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.Timeline;
-import com.google.android.exoplayer2.audio.AudioAttributes;
-import com.google.android.exoplayer2.metadata.Metadata;
-import com.google.android.exoplayer2.source.TrackGroupArray;
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
-import com.google.android.exoplayer2.video.VideoSize;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /* renamed from: it.saimao.doksu.DetailActivity */
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
     public static SimpleExoPlayer exoPlayer;
-    private static FloatingActionButton fabLeft;
     private static ImageButton fabNext;
     private static ImageButton fabPlay;
     private static ImageButton fabPrev;
-    private static FloatingActionButton fabRight;
     /* access modifiers changed from: private */
     public static boolean isEnded;
     private static TextView lyric;
@@ -81,23 +72,26 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     /* access modifiers changed from: private */
     public static TextView tvStart;
     /* access modifiers changed from: private */
-    public Typeface typeface;
+    private Typeface ajTypeFace;
+    private Typeface nkTypeFace;
+
+    private static final String[] menuItems = {"ၽုၺ်ႇသဵင်ၵႂၢမ်း", "ၼႄၶွတ်ႇတိင်ႇ"};
 
     public static void setPlayImage(int i) {
         fabPlay.setImageResource(i);
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem add = menu.add("Play Sound");
-        add.setCheckable(true);
-        add.setShowAsAction(2);
-        if (Utils.isReadMode(this)) {
-            add.setIcon(R.drawable.ic_no_sound);
-            add.setChecked(true);
-        } else {
-            add.setIcon(R.drawable.ic_sound);
-            add.setChecked(false);
-        }
+
+        MenuItem playSound = menu.add(menuItems[0]);
+        playSound.setCheckable(true);
+        playSound.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        playSound.setChecked(!Utils.isReadMode(this));
+
+        MenuItem showChords = menu.add(menuItems[1]);
+        showChords.setCheckable(true);
+        showChords.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        showChords.setChecked(Utils.isShowChord(this));
         return true;
     }
 
@@ -106,36 +100,36 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             finish();
             return true;
         }
-        if (menuItem.isChecked()) {
-            menuItem.setChecked(false);
-            menuItem.setIcon(R.drawable.ic_sound);
-            mediaLayout.setVisibility(View.VISIBLE);
-            setShowReadMode(false);
-            playMedia();
-            Utils.setReadMode(this, false);
-        } else {
-            menuItem.setChecked(true);
-            menuItem.setIcon(R.drawable.ic_no_sound);
-            mediaLayout.setVisibility(View.GONE);
-            setShowReadMode(true);
-            pageNumber = exoPlayer.getCurrentWindowIndex() + 1;
-            if (exoPlayer.isPlaying()) {
-                exoPlayer.stop();
+
+        if (menuItem.getTitle().equals(menuItems[0])) {
+            // Enable Song
+            if (menuItem.isChecked()) {
+                menuItem.setChecked(false);
+                mediaLayout.setVisibility(View.GONE);
+                pageNumber = exoPlayer.getCurrentWindowIndex() + 1;
+                if (exoPlayer.isPlaying()) {
+                    exoPlayer.stop();
+                }
+                stopService();
+                Utils.setReadMode(this, true);
+            } else {
+                menuItem.setChecked(true);
+                mediaLayout.setVisibility(View.VISIBLE);
+                playMedia();
+                Utils.setReadMode(this, false);
             }
-            stopService();
-            Utils.setReadMode(this, true);
+        } else if (menuItem.getTitle().equals(menuItems[1])) {
+            // Enable Guitar Chord
+            if (menuItem.isChecked()) {
+                menuItem.setChecked(false);
+                Utils.setShowChord(this,false);
+            } else {
+                menuItem.setChecked(true);
+                Utils.setShowChord(this,true);
+            }
+            updateLyricDisplay();
         }
         return true;
-    }
-
-    private void setShowReadMode(boolean z) {
-        if (z) {
-            fabRight.setVisibility(View.VISIBLE);
-            fabLeft.setVisibility(View.VISIBLE);
-            return;
-        }
-        fabRight.setVisibility(View.GONE);
-        fabLeft.setVisibility(View.GONE);
     }
 
     /* access modifiers changed from: protected */
@@ -143,17 +137,13 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         super.onStart();
         int intExtra = getIntent().getIntExtra("number", 0);
         pageNumber = intExtra;
-        title.setText(Utils.lyricTitle(intExtra));
-        lyric.setText(Utils.readLyric(this, pageNumber));
-        lyric.setTypeface(this.typeface);
+        updateLyricTitle(pageNumber);
+        updateLyricDisplay();
+        lyric.setTypeface(this.nkTypeFace);
         if (Utils.isReadMode(this)) {
-            fabRight.setVisibility(View.VISIBLE);
-            fabLeft.setVisibility(View.VISIBLE);
             mediaLayout.setVisibility(View.GONE);
             return;
         }
-        fabRight.setVisibility(View.GONE);
-        fabLeft.setVisibility(View.GONE);
         mediaLayout.setVisibility(View.VISIBLE);
         if (pageNumber == Utils.getPlayingSong()) {
             playCurrentMedia();
@@ -163,6 +153,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             playMedia();
         }
+    }
+
+    private void updateLyricTitle(int pageNumber) {
+        title.setText(Utils.lyricTitle(pageNumber));
     }
 
     private void playCurrentMediaWithUpdatedUI() {
@@ -182,19 +176,22 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
             SpannableString title = new SpannableString("ၽဵင်းၵႂၢမ်းတုၵ်းသူး");
-            title.setSpan(new DokSuTypefaceSpan(Utils.getAjKunheingFont(this), 90, 0.1f), 0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            title.setSpan(new DokSuTypefaceSpan(Utils.getAjKunheingFont(this), Utils.dpToPx(this, 34), 0.1f), 0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             actionBar.setTitle(title);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow_white);
+//            actionBar.set
+
         }
     }
 
 
-            /* access modifiers changed from: protected */
+    /* access modifiers changed from: protected */
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView((int) R.layout.activity_detail);
         setupActionBarStyle();
-        typeface = ResourcesCompat.getFont(this, R.font.aj_kunheing);
+        ajTypeFace = ResourcesCompat.getFont(this, R.font.aj_kunheing);
+        nkTypeFace = ResourcesCompat.getFont(this, R.font.namteng);
         mHandler = new Handler();
         mediaLayout = (LinearLayout) findViewById(R.id.mediaLayout);
         ScrollView scrollView = (ScrollView) findViewById(R.id.lyricLayout);
@@ -224,20 +221,16 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         fabNext = (ImageButton) findViewById(R.id.fab_next);
         fabPlay = (ImageButton) findViewById(R.id.fab_play);
         fabPrev = (ImageButton) findViewById(R.id.fab_prev);
-        fabLeft = (FloatingActionButton) findViewById(R.id.fab_left);
-        fabRight = (FloatingActionButton) findViewById(R.id.fab_right);
         fabNext.setOnClickListener(this);
         fabPlay.setOnClickListener(this);
         fabPrev.setOnClickListener(this);
-        fabLeft.setOnClickListener(this);
-        fabRight.setOnClickListener(this);
         title.setFactory(() -> {
             TextView textView = new TextView(DetailActivity.this);
-            textView.setTextSize(22.0f);
-            textView.setGravity(17);
-            textView.setTextColor(ViewCompat.MEASURED_STATE_MASK);
-            textView.setTypeface(DetailActivity.this.typeface);
-            textView.setPadding(0, 10, 0, 0);
+            textView.setTextSize(28.0f);
+            textView.setHeight(Utils.dpToPx(this, 75));
+            textView.setGravity(Gravity.CENTER);
+            textView.setTextColor(Color.BLACK);
+            textView.setTypeface(DetailActivity.this.ajTypeFace);
             DetailActivity.title.setInAnimation(DetailActivity.this, android.R.anim.fade_in);
             DetailActivity.title.setOutAnimation(DetailActivity.this, android.R.anim.fade_out);
             return textView;
@@ -249,21 +242,29 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         startService();
     }
 
+    private float x1, x2;
+
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        if (!Utils.isReadMode(this)) {
-            return false;
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN -> x1 = motionEvent.getX();
+            case MotionEvent.ACTION_UP -> {
+                x2 = motionEvent.getX();
+                float deltaX = x2 - x1;
+                if (deltaX > 300) {
+                    if (Utils.isReadMode(this))
+                        onPagePrev();
+                    else
+                        onTrackPrev();
+
+                } else if (deltaX < -300) {
+                    if (Utils.isReadMode(this))
+                        onPageNext();
+                    else
+                        onTrackNext();
+                }
+            }
         }
-        if (motionEvent.getAction() == 0) {
-            fabLeft.hide();
-            fabRight.hide();
-            return false;
-        } else if (motionEvent.getAction() != 1) {
-            return false;
-        } else {
-            fabLeft.show();
-            fabRight.show();
-            return false;
-        }
+        return false;
     }
 
     /* access modifiers changed from: protected */
@@ -294,7 +295,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             } else {
                 setPlayImage(R.drawable.ic_play_btn);
             }
-        } catch (Exception unused) {
+        } catch (Exception ignored) {
         }
     }
 
@@ -341,17 +342,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     public void onClick(View view) {
         var id = view.getId();
-        if (id == R.id.fab_left) {
-            int i = pageNumber - 1;
-            pageNumber = i;
-            if (i == 0) {
-                pageNumber = 37;
-            }
-            lyric.setAnimation(AnimationUtils.makeInAnimation(this, true));
-            title.setText(Utils.lyricTitle(pageNumber));
-            lyric.setText(Utils.readLyric(this, pageNumber));
-            lyricLayout.scrollTo(0, 0);
-        } else if (id == R.id.fab_next){
+        if (id == R.id.fab_next) {
             onTrackNext();
         } else if (id == R.id.fab_play) {
             if (exoPlayer.isPlaying()) {
@@ -359,19 +350,54 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             } else {
                 onTrackPLay();
             }
-        } else if (id == R.id.fab_prev){
+        } else if (id == R.id.fab_prev) {
             onTrackPrev();
-        } else if (id == R.id.fab_right) {
-            int i2 = pageNumber + 1;
-            pageNumber = i2;
-            if (i2 > 37) {
-                pageNumber = 1;
-            }
-            lyric.setAnimation(AnimationUtils.makeInAnimation(this, false));
-            title.setText(Utils.lyricTitle(pageNumber));
-            lyric.setText(Utils.readLyric(this, pageNumber));
-            lyricLayout.scrollTo(0, 0);
         }
+    }
+
+    private void onPageNext() {
+        int i2 = pageNumber + 1;
+        pageNumber = i2;
+        if (i2 > 37) {
+            pageNumber = 1;
+        }
+        lyric.setAnimation(AnimationUtils.makeInAnimation(this, false));
+        title.setText(Utils.lyricTitle(pageNumber));
+        // TODO - Set Lyric
+        updateLyricDisplay();
+        lyricLayout.scrollTo(0, 0);
+    }
+
+    private void updateLyricDisplay() {
+        if (Utils.isShowChord(this)) {
+            String lyrics = Utils.readLyricsWithChords(this, pageNumber);
+            SpannableString spannableString = new SpannableString(lyrics);
+            Pattern pattern = Pattern.compile("\\b([A-G](#|b|m|bm|7)?\\s*)\\b");
+            Matcher matcher = pattern.matcher(lyrics);
+            while (matcher.find()) {
+                int start = matcher.start();
+                int end = matcher.end();
+                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#f7620b")), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableString.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+            lyric.setText(spannableString);
+        } else {
+            String lyrics = Utils.readLyricsOnly(this, pageNumber);
+            lyric.setText(lyrics);
+        }
+    }
+
+    private void onPagePrev() {
+        int i = pageNumber - 1;
+        pageNumber = i;
+        if (i == 0) {
+            pageNumber = 37;
+        }
+        lyric.setAnimation(AnimationUtils.makeInAnimation(this, true));
+        title.setText(Utils.lyricTitle(pageNumber));
+//        lyric.setText(Utils.readLyricsWithChords(this, pageNumber));
+        updateLyricDisplay();
+        lyricLayout.scrollTo(0, 0);
     }
 
     public void onTrackPLay() {
@@ -428,7 +454,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         pageNumber = exoPlayer.getCurrentWindowIndex() + 1;
         Utils.setPlayingSong(exoPlayer.getCurrentWindowIndex() + 1);
         title.setText(Utils.lyricTitle(pageNumber));
-        lyric.setText(Utils.readLyric(this, pageNumber));
+//        lyric.setText(Utils.readLyricsWithChords(this, pageNumber));
+        updateLyricDisplay();
         lyricLayout.scrollTo(0, 0);
     }
 }
