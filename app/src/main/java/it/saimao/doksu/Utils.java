@@ -111,4 +111,9 @@ public class Utils {
         return ResourcesCompat.getFont(context, R.font.aj_kunheing);
     }
 
+    public int dpToPx(int dp) {
+       DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
+       return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));     
+    }
+
 }
