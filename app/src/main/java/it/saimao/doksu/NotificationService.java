@@ -19,7 +19,7 @@ import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 public class NotificationService extends Service {
     static SimpleExoPlayer exoPlayer;
     static PlayerNotificationManager playerNotificationManager;
-    private int notificationId = 1234;
+    private final int notificationId = 1234;
 
     public IBinder onBind(Intent intent) {
         return null;

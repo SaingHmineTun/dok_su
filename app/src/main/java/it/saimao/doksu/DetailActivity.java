@@ -230,6 +230,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             textView.setHeight(Utils.dpToPx(this, 75));
             textView.setGravity(Gravity.CENTER);
             textView.setTextColor(Color.BLACK);
+            textView.setBackgroundResource(R.drawable.text_line);
             textView.setTypeface(DetailActivity.this.ajTypeFace);
             DetailActivity.title.setInAnimation(DetailActivity.this, android.R.anim.fade_in);
             DetailActivity.title.setOutAnimation(DetailActivity.this, android.R.anim.fade_out);
@@ -358,12 +359,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void onPageNext() {
         int i2 = pageNumber + 1;
         pageNumber = i2;
-        if (i2 > 37) {
+        if (i2 > Utils.lyricTitles().length) {
             pageNumber = 1;
         }
         lyric.setAnimation(AnimationUtils.makeInAnimation(this, false));
         title.setText(Utils.lyricTitle(pageNumber));
-        // TODO - Set Lyric
         updateLyricDisplay();
         lyricLayout.scrollTo(0, 0);
     }
@@ -372,7 +372,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (Utils.isShowChord(this)) {
             String lyrics = Utils.readLyricsWithChords(this, pageNumber);
             SpannableString spannableString = new SpannableString(lyrics);
-            Pattern pattern = Pattern.compile("\\b([A-G](#|b|m|bm|7)?\\s*)\\b");
+            Pattern pattern = Pattern.compile("\\b([A-GO](#|b|m|bm|7)?\\s*)\\b");
             Matcher matcher = pattern.matcher(lyrics);
             while (matcher.find()) {
                 int start = matcher.start();
@@ -391,11 +391,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         int i = pageNumber - 1;
         pageNumber = i;
         if (i == 0) {
-            pageNumber = 37;
+            pageNumber = Utils.lyricTitles().length;
         }
         lyric.setAnimation(AnimationUtils.makeInAnimation(this, true));
         title.setText(Utils.lyricTitle(pageNumber));
-//        lyric.setText(Utils.readLyricsWithChords(this, pageNumber));
         updateLyricDisplay();
         lyricLayout.scrollTo(0, 0);
     }
@@ -436,6 +435,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onTrackPrev() {
         if (exoPlayer.hasPrevious()) {
             exoPlayer.previous();
+            fabPlay.setImageResource(R.drawable.ic_pause_btn);
         } else {
             Toast.makeText(this, "No previous songs", Toast.LENGTH_SHORT).show();
         }
@@ -444,17 +444,17 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onTrackNext() {
         if (exoPlayer.hasNext()) {
             exoPlayer.next();
+            fabPlay.setImageResource(R.drawable.ic_pause_btn);
         } else {
             Toast.makeText(this, "No next songs", Toast.LENGTH_SHORT).show();
         }
     }
 
     /* access modifiers changed from: private */
-    public void updateDataForPlayingMediaItem() {
+    private void updateDataForPlayingMediaItem() {
         pageNumber = exoPlayer.getCurrentWindowIndex() + 1;
         Utils.setPlayingSong(exoPlayer.getCurrentWindowIndex() + 1);
         title.setText(Utils.lyricTitle(pageNumber));
-//        lyric.setText(Utils.readLyricsWithChords(this, pageNumber));
         updateLyricDisplay();
         lyricLayout.scrollTo(0, 0);
     }
