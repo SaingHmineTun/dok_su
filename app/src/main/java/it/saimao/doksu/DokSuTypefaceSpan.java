@@ -16,10 +16,19 @@ public class DokSuTypefaceSpan extends MetricAffectingSpan {
     private final Typeface typeface;
     private final int textSize;
     private final float letterSpacing;
-    public DokSuTypefaceSpan(Typeface typeface, int textSize, float letterSpacing) {
+    private final int color;
+    public DokSuTypefaceSpan(Typeface typeface, int textSize, float letterSpacing, int color) {
         this.typeface = typeface;
         this.textSize = textSize;
         this.letterSpacing = letterSpacing;
+        this.color = color;
+    }
+
+    public DokSuTypefaceSpan(Typeface typeface, int textSize, int color) {
+        this.typeface = typeface;
+        this.textSize = textSize;
+        this.letterSpacing = 0;
+        this.color = color;
     }
 
     @Override
@@ -36,6 +45,6 @@ public class DokSuTypefaceSpan extends MetricAffectingSpan {
         paint.setTypeface(typeface);
         paint.setTextSize(textSize);
         paint.setLetterSpacing(letterSpacing);
-        paint.setColor(Color.WHITE);
+        paint.setColor(color);
     }
 }

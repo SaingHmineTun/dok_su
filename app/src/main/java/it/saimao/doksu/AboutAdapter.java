@@ -12,13 +12,13 @@ import android.widget.TextView;
 import androidx.core.content.res.ResourcesCompat;
 
 /* renamed from: it.saimao.doksu.MaoAdapter */
-public class MaoAdapter extends BaseAdapter {
+public class AboutAdapter extends BaseAdapter {
     Context context;
     int[] icons;
     LayoutInflater inflater;
     String[] stringsAsk;
     String[] stringsValues;
-    private Typeface uniTypeface;
+    private final Typeface uniTypeface;
 
     public Object getItem(int i) {
         return null;
@@ -28,7 +28,7 @@ public class MaoAdapter extends BaseAdapter {
         return 0;
     }
 
-    public MaoAdapter(Context context, String[] strArr, String[] strArr2, int[] iArr) {
+    public AboutAdapter(Context context, String[] strArr, String[] strArr2, int[] iArr) {
         this.context = context;
         this.stringsAsk = strArr;
         this.stringsValues = strArr2;
@@ -43,7 +43,7 @@ public class MaoAdapter extends BaseAdapter {
     }
 
     public View getView(int i, View view, ViewGroup viewGroup) {
-        View inflate = this.inflater.inflate(R.layout.activity_list_view, (ViewGroup) null);
+        View inflate = this.inflater.inflate(R.layout.about_list_item, (ViewGroup) null);
         TextView textView = (TextView) inflate.findViewById(R.id.textAsk);
         TextView textView2 = (TextView) inflate.findViewById(R.id.textValue);
         textView.setTypeface(this.uniTypeface);

@@ -1,12 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.DokSu" parent="Theme.MaterialComponents.DayNight">
-        <!-- Customize your light theme here. -->
+    <style name="Base.Theme.DokSu" parent="Theme.MaterialComponents.Light">
         <item name="colorPrimary">@color/khamfa_secondary</item>
         <item name="colorPrimaryDark">@color/khamfa_secondary</item>
         <item name="colorAccent">@color/khamfa_secondary</item>
         <item name="popupMenuBackground">@color/khamfa_primary</item>
-
+        <item name="actionOverflowButtonStyle">@style/actionButtonOverflow</item>
     </style>
 
     <style name="Theme.DokSu" parent="Base.Theme.DokSu" />

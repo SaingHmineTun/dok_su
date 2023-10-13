@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.exoplayer2.MediaItem;
@@ -122,10 +124,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             // Enable Guitar Chord
             if (menuItem.isChecked()) {
                 menuItem.setChecked(false);
-                Utils.setShowChord(this,false);
+                Utils.setShowChord(this, false);
             } else {
                 menuItem.setChecked(true);
-                Utils.setShowChord(this,true);
+                Utils.setShowChord(this, true);
             }
             updateLyricDisplay();
         }
@@ -176,7 +178,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
             SpannableString title = new SpannableString("ၽဵင်းၵႂၢမ်းတုၵ်းသူး");
-            title.setSpan(new DokSuTypefaceSpan(Utils.getAjKunheingFont(this), Utils.dpToPx(this, 34), 0.1f), 0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            title.setSpan(new DokSuTypefaceSpan(Utils.getAjKunheingFont(this), Utils.dpToPx(this, 34), 0.1f, Color.WHITE), 0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             actionBar.setTitle(title);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_back_arrow_white);
 //            actionBar.set
@@ -230,7 +232,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             textView.setHeight(Utils.dpToPx(this, 75));
             textView.setGravity(Gravity.CENTER);
             textView.setTextColor(Color.BLACK);
-            textView.setBackgroundResource(R.drawable.text_line);
             textView.setTypeface(DetailActivity.this.ajTypeFace);
             DetailActivity.title.setInAnimation(DetailActivity.this, android.R.anim.fade_in);
             DetailActivity.title.setOutAnimation(DetailActivity.this, android.R.anim.fade_out);
@@ -369,22 +370,29 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void updateLyricDisplay() {
+        String lyrics = Utils.readLyricsWithChords(this, pageNumber);
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(lyrics);
+        String[] lines = lyrics.split("\n");
+        for (String line: lines) {
+            System.out.println(line);
+            if (line.contains("-")) {
+                int start = lyrics.indexOf(line);
+                int end = start + line.length();
+//                spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD),start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableStringBuilder.setSpan(new DokSuTypefaceSpan(ajTypeFace, Utils.dpToPx(this,30), Color.BLACK), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+            }
+        }
         if (Utils.isShowChord(this)) {
-            String lyrics = Utils.readLyricsWithChords(this, pageNumber);
-            SpannableString spannableString = new SpannableString(lyrics);
             Pattern pattern = Pattern.compile("\\b([A-GO](#|b|m|bm|7)?\\s*)\\b");
             Matcher matcher = pattern.matcher(lyrics);
             while (matcher.find()) {
                 int start = matcher.start();
                 int end = matcher.end();
-                spannableString.setSpan(new ForegroundColorSpan(Color.parseColor("#f7620b")), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                spannableString.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#f7620b")), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
-            lyric.setText(spannableString);
-        } else {
-            String lyrics = Utils.readLyricsOnly(this, pageNumber);
-            lyric.setText(lyrics);
         }
+        lyric.setText(spannableStringBuilder);
     }
 
     private void onPagePrev() {

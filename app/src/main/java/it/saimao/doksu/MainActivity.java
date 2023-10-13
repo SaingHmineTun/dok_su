@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             actionBar.setDisplayShowTitleEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
             SpannableString title = new SpannableString("ၽဵင်းၵႂၢမ်းတုၵ်းသူး");
-            title.setSpan(new DokSuTypefaceSpan(Utils.getAjKunheingFont(this), Utils.dpToPx(this, 34), 0.1f),0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            title.setSpan(new DokSuTypefaceSpan(Utils.getAjKunheingFont(this), Utils.dpToPx(this, 34), 0.1f, Color.WHITE),0, title.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
             actionBar.setTitle(title);
         }
     }

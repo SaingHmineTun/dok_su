@@ -23,7 +23,7 @@
             android:layout_height="match_parent"
             android:text="ယွၼ်းသူႈႁႂ်ႈယူႇလီမၢင်ႈမီး"
             android:gravity="center_vertical"
-            android:textSize="26sp"
+            android:textSize="28sp"
             android:fontFamily="@font/aj_kunheing"
             android:layout_margin="10dp"/>
 
