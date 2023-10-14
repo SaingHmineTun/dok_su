@@ -23,7 +23,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 /* renamed from: it.saimao.doksu.MainActivity */
 public class MainActivity extends AppCompatActivity {
     private static ExtendedFloatingActionButton fabPlaying;
-    private ListView list;
 
     /* access modifiers changed from: protected */
     public void onCreate(Bundle bundle) {
@@ -31,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView((int) R.layout.activity_main);
         setupActionBarStyle();
         MyListAdapter myListAdapter = new MyListAdapter(this, Utils.lyricTitles());
-        this.list = findViewById(R.id.list);
+        ListView list = findViewById(R.id.list);
         fabPlaying = findViewById(R.id.fab_playing);
         if (Utils.getPlayingSong() == 0) {
             fabPlaying.hide();
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.gotoCurrentActivity();
             }
         });
-        this.list.setAdapter(myListAdapter);
+        list.setAdapter(myListAdapter);
 
     }
 

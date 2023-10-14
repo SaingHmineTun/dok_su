@@ -7,10 +7,9 @@ import android.graphics.Typeface;
 import android.util.DisplayMetrics;
 
 import androidx.core.content.res.ResourcesCompat;
-
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.upstream.RawResourceDataSource;
+import androidx.media3.common.MediaItem;
+import androidx.media3.datasource.RawResourceDataSource;
+import androidx.media3.exoplayer.SimpleExoPlayer;
 
 import java.io.BufferedReader;
 import java.io.IOException;

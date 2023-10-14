@@ -31,17 +31,17 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
-
-import com.google.android.exoplayer2.MediaItem;
-import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.SimpleExoPlayer;
+import androidx.media3.common.MediaItem;
+import androidx.media3.common.Player;
+import androidx.media3.common.util.UnstableApi;
+import androidx.media3.exoplayer.ExoPlayer;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/* renamed from: it.saimao.doksu.DetailActivity */
+@UnstableApi /* renamed from: it.saimao.doksu.DetailActivity */
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {
-    public static SimpleExoPlayer exoPlayer;
+    public static ExoPlayer exoPlayer;
     private static ImageButton fabNext;
     private static ImageButton fabPlay;
     private static ImageButton fabPrev;
@@ -272,18 +272,20 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     /* access modifiers changed from: protected */
     public void onPause() {
         super.onPause();
-        SimpleExoPlayer simpleExoPlayer = exoPlayer;
-        if (simpleExoPlayer != null && simpleExoPlayer.isPlaying()) {
+        ExoPlayer exoPlayer1 = exoPlayer;
+        if (exoPlayer1 != null && exoPlayer1.isPlaying()) {
             Utils.setPlayingSong(exoPlayer.getCurrentWindowIndex() + 1);
         }
     }
 
     public void startService() {
-        startService(new Intent(this, NotificationService.class));
+        // TODO - Start Showing Notification
+//        startService(new Intent(this, NotificationService.class));
     }
 
     public void stopService() {
-        stopService(new Intent(this, NotificationService.class));
+        // TODO - Stop Showing Notification
+//        stopService(new Intent(this, NotificationService.class));
     }
 
     private void playCurrentMedia() {
@@ -305,7 +307,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         try {
             if (exoPlayer == null) {
                 Utils.initExoPlayer(this);
-                SimpleExoPlayer exoPlayer2 = Utils.getExoPlayer();
+                ExoPlayer exoPlayer2 = Utils.getExoPlayer();
                 exoPlayer = exoPlayer2;
                 exoPlayer2.setRepeatMode(Player.REPEAT_MODE_ALL);
                 exoPlayer.addListener(new Player.Listener() {
@@ -370,19 +372,21 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void updateLyricDisplay() {
-        String lyrics = Utils.readLyricsWithChords(this, pageNumber);
-        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(lyrics);
-        String[] lines = lyrics.split("\n");
-        for (String line: lines) {
-            System.out.println(line);
-            if (line.contains("-")) {
-                int start = lyrics.indexOf(line);
-                int end = start + line.length();
-//                spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD),start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                spannableStringBuilder.setSpan(new DokSuTypefaceSpan(ajTypeFace, Utils.dpToPx(this,30), Color.BLACK), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            }
-        }
+//        String lyrics = Utils.readLyricsWithChords(this, pageNumber);
+//        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(lyrics);
+//        String[] lines = lyrics.split("\n");
+//        for (String line: lines) {
+//            System.out.println(line);
+//            if (line.contains("-")) {
+//                int start = lyrics.indexOf(line);
+//                int end = start + line.length();
+//                spannableStringBuilder.setSpan(new DokSuTypefaceSpan(ajTypeFace, Utils.dpToPx(this,30), Color.BLACK), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+//            }
+//        }
+        SpannableStringBuilder spannableStringBuilder;
         if (Utils.isShowChord(this)) {
+            String lyrics = Utils.readLyricsWithChords(this, pageNumber);
+            spannableStringBuilder = new SpannableStringBuilder(lyrics);
             Pattern pattern = Pattern.compile("\\b([A-GO](#|b|m|bm|7)?\\s*)\\b");
             Matcher matcher = pattern.matcher(lyrics);
             while (matcher.find()) {
@@ -390,6 +394,22 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 int end = matcher.end();
                 spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#f7620b")), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 spannableStringBuilder.setSpan(new StyleSpan(Typeface.BOLD), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        } else {
+            String lyrics = Utils.readLyricsOnly(this, pageNumber);
+            spannableStringBuilder = new SpannableStringBuilder(lyrics);
+        }
+
+//        String lyrics = Utils.readLyricsWithChords(this, pageNumber);
+//        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(lyrics);
+        String lyrics = spannableStringBuilder.toString();
+        String[] lines = lyrics.split("\n");
+        for (String line: lines) {
+            System.out.println(line);
+            if (line.contains("-")) {
+                int start = lyrics.indexOf(line);
+                int end = start + line.length();
+                spannableStringBuilder.setSpan(new DokSuTypefaceSpan(ajTypeFace, Utils.dpToPx(this,30), Color.BLACK), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE);
             }
         }
         lyric.setText(spannableStringBuilder);
@@ -408,8 +428,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void onTrackPLay() {
-        SimpleExoPlayer simpleExoPlayer = exoPlayer;
-        if (simpleExoPlayer != null && !simpleExoPlayer.isPlaying()) {
+        ExoPlayer exoPlayer1 = exoPlayer;
+        if (exoPlayer1 != null && !exoPlayer1.isPlaying()) {
             if (isEnded) {
                 isEnded = false;
                 exoPlayer.seekTo(pageNumber - 1, -1);
@@ -424,25 +444,26 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     /* access modifiers changed from: private */
     public boolean isMyServiceDead() {
-        for (ActivityManager.RunningServiceInfo runningServiceInfo : ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
-            if (runningServiceInfo.service.getClassName().equals(NotificationService.class.getName())) {
-                return false;
-            }
-        }
+        // TODO - Check my notification service
+//        for (ActivityManager.RunningServiceInfo runningServiceInfo : ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
+//            if (runningServiceInfo.service.getClassName().equals(NotificationService.class.getName())) {
+//                return false;
+//            }
+//        }
         return true;
     }
 
     public void onTrackPause() {
-        SimpleExoPlayer simpleExoPlayer = exoPlayer;
-        if (simpleExoPlayer != null && simpleExoPlayer.isPlaying()) {
+        ExoPlayer exoPlayer1 = exoPlayer;
+        if (exoPlayer1 != null && exoPlayer1.isPlaying()) {
             exoPlayer.pause();
             fabPlay.setImageResource(R.drawable.ic_play_btn);
         }
     }
 
     public void onTrackPrev() {
-        if (exoPlayer.hasPrevious()) {
-            exoPlayer.previous();
+        if (exoPlayer.hasPreviousMediaItem()) {
+            exoPlayer.seekToPreviousMediaItem();
             fabPlay.setImageResource(R.drawable.ic_pause_btn);
         } else {
             Toast.makeText(this, "No previous songs", Toast.LENGTH_SHORT).show();
@@ -450,8 +471,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     public void onTrackNext() {
-        if (exoPlayer.hasNext()) {
-            exoPlayer.next();
+        if (exoPlayer.hasNextMediaItem()) {
+            exoPlayer.seekToNextMediaItem();
             fabPlay.setImageResource(R.drawable.ic_pause_btn);
         } else {
             Toast.makeText(this, "No next songs", Toast.LENGTH_SHORT).show();
