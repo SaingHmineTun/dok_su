@@ -34,19 +34,19 @@ public class AboutActivity extends AppCompatActivity implements AdapterView.OnIt
 
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long j) {
         Intent intent;
-        if (i == 1) {
+        if (i == 2) {
             try {
                 intent = new Intent("android.intent.action.VIEW", Uri.parse("fb://page/100377671433172"));
             } catch (Exception unused) {
                 intent = new Intent("android.intent.action.VIEW", Uri.parse("https://www.facebook.com/100377671433172"));
             }
             startActivity(intent);
-        } else if (i == 0) {
+        } else if (i == 1) {
             Intent intent2 = new Intent("android.intent.action.SEND");
             intent2.putExtra("android.intent.extra.EMAIL", new String[]{"tmk.muse@gmail.com"});
             intent2.setType("message/rfc822");
             startActivity(Intent.createChooser(intent2, "Choose an Email client :"));
-        } else if (i == 2) {
+        } else if (i == 0) {
             try {
                 intent = new Intent("android.intent.action.VIEW", Uri.parse("fb://page/103066969300092"));
             } catch (Exception unused) {

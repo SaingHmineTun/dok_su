@@ -17,17 +17,18 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.media3.common.util.UnstableApi;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
-/* renamed from: it.saimao.doksu.MainActivity */
+@UnstableApi /* renamed from: it.saimao.doksu.MainActivity */
 public class MainActivity extends AppCompatActivity {
     private static ExtendedFloatingActionButton fabPlaying;
 
     /* access modifiers changed from: protected */
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setContentView((int) R.layout.activity_main);
+        setContentView(R.layout.activity_main);
         setupActionBarStyle();
         MyListAdapter myListAdapter = new MyListAdapter(this, Utils.lyricTitles());
         ListView list = findViewById(R.id.list);
@@ -39,11 +40,7 @@ public class MainActivity extends AppCompatActivity {
             ExtendedFloatingActionButton extendedFloatingActionButton = fabPlaying;
             extendedFloatingActionButton.setText(Utils.getPlayingSong() + "");
         }
-        fabPlaying.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                MainActivity.this.gotoCurrentActivity();
-            }
-        });
+        fabPlaying.setOnClickListener(view -> MainActivity.this.gotoCurrentActivity());
         list.setAdapter(myListAdapter);
 
     }

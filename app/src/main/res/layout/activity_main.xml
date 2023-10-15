@@ -14,19 +14,22 @@
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_playing"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:gravity="center"
         android:layout_gravity="bottom|end|center_vertical|center_horizontal|center"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
         android:paddingStart="0dp"
         android:paddingEnd="0dp"
+        android:paddingBottom="5dp"
         android:text="1"
         android:textAlignment="center"
         android:textColor="@color/khamfa_secondary"
-        android:textSize="18sp"
+        android:textSize="22sp"
+        android:fontFamily="@font/aj_kunheing"
         android:textStyle="bold"
         app:backgroundTint="@color/khamfa_primary"
-        app:elevation="5dp"
+        app:elevation="10dp"
         app:fabCustomSize="50dp" />
 </FrameLayout>
