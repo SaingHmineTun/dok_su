@@ -54,7 +54,6 @@ public class Utils {
     }
 
     public static String lyricTitle(int i) {
-        System.out.println("Page Number : " + i);
         return "(" + i + ") " + titles[i - 1];
     }
 

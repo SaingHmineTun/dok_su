@@ -1,10 +1,8 @@
 package it.saimao.doksu;
 
 import android.content.ComponentName;
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,8 +29,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
+import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
@@ -75,7 +73,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private MediaController mediaController;
     private static final String[] menuItems = {"ၽုၺ်ႇသဵင်ၵႂၢမ်း", "ၼႄၶွတ်ႇတိင်ႇ"};
 
-    private void setPlayImage(int i) {
+    private void setPlayFabImage(int i) {
         fabPlay.setImageResource(i);
     }
 
@@ -136,25 +134,29 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 mediaController = controllerFuture.get();
                 startPlayingDoksu();
                 mediaController.addListener(new Player.Listener() {
-
-                    public void onMediaItemTransition(MediaItem mediaItem, int i) {
-                        DetailActivity.this.updateDataForPlayingMediaItem();
-                    }
+                    /** Don't know why but doesn't work in new exoplayer
+                     *
+                     //                    public void onMediaItemTransition(MediaItem mediaItem, int i) {
+                     //                        Log.d("Doksu", "On Media Item Transition");
+                     //                        updateDataForPlayingMediaItem();
+                     //                    }
+                     *
+                     */
 
                     @Override
                     public void onIsPlayingChanged(boolean isPlaying) {
                         if (isPlaying) {
-                            setPlayImage(R.drawable.ic_pause_btn);
+                            setPlayFabImage(R.drawable.ic_pause_btn);
                         } else {
-                            setPlayImage(R.drawable.ic_play_btn);
+                            setPlayFabImage(R.drawable.ic_play_btn);
                         }
                     }
-
                     public void onPlaybackStateChanged(int i) {
                         if (i == PlaybackState.STATE_PLAYING) {
                             seekBar.setMax((int) mediaController.getDuration());
+                            tvEnd.setText(Utils.formatToMinuteSeconds(mediaController.getDuration()));
                             mHandler.post(mRunnable);
-                            Utils.setPlayingSong(mediaController.getCurrentWindowIndex() + 1);
+                            updateDataForPlayingMediaItem();
                             mediaController.play();
                         }
                     }
@@ -213,8 +215,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-
-    /* access modifiers changed from: protected */
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_detail);
@@ -303,7 +303,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             seekBar.setMax((int) mediaController.getDuration());
             tvEnd.setText(Utils.formatToMinuteSeconds(mediaController.getDuration()));
             mHandler.post(mRunnable);
-            Utils.setPlayingSong(mediaController.getCurrentWindowIndex() + 1);
+            Utils.setPlayingSong(mediaController.getCurrentMediaItemIndex() + 1);
         } catch (Exception ignored) {
         }
     }
@@ -360,7 +360,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         String lyrics = spannableStringBuilder.toString();
         String[] lines = lyrics.split("\n");
         for (String line : lines) {
-            System.out.println(line);
             if (line.contains("-")) {
                 int start = lyrics.indexOf(line);
                 int end = start + line.length();
@@ -371,9 +370,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void onPagePrev() {
-        int i = pageNumber - 1;
-        pageNumber = i;
-        if (i == 0) {
+        pageNumber--;
+        if (pageNumber == 0) {
             pageNumber = Utils.lyricTitles().length;
         }
         lyric.setAnimation(AnimationUtils.makeInAnimation(this, true));
@@ -390,9 +388,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             mediaController.play();
             fabPlay.setImageResource(R.drawable.ic_pause_btn);
-//            if (isMyServiceDead()) {
-//                startShowingNotification();
-//            }
         }
     }
 
@@ -427,8 +422,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void updateDataForPlayingMediaItem() {
         pageNumber = mediaController.getCurrentMediaItemIndex() + 1;
         Utils.setPlayingSong(mediaController.getCurrentMediaItemIndex() + 1);
-        title.setText(Utils.lyricTitle(pageNumber));
+        updateLyricTitle(pageNumber);
         updateLyricDisplay();
         lyricLayout.scrollTo(0, 0);
+        MainActivity.setCurrentSong(pageNumber);
     }
 }

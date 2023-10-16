@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     /* access modifiers changed from: protected */
     public void onRestart() {
         super.onRestart();
-        if (Utils.getPlayingSong() == 0) {
+        if (Utils.isReadMode(this)) {
             fabPlaying.hide();
             return;
         }
@@ -78,14 +78,8 @@ public class MainActivity extends AppCompatActivity {
         fabPlaying.setText(String.valueOf(i));
     }
 
-    /* access modifiers changed from: protected */
-    public void onResume() {
-        super.onResume();
-    }
-
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuItem add = menu.add("About");
-        add.setCheckable(true);
         add.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         add.setIcon(R.drawable.ic_about);
         return true;

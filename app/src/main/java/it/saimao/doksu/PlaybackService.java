@@ -15,6 +15,7 @@ import androidx.annotation.OptIn;
 import androidx.core.app.NotificationCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
+import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.RawResourceDataSource;
 import androidx.media3.exoplayer.ExoPlayer;
@@ -48,15 +49,11 @@ public class PlaybackService extends MediaSessionService {
         exoPlayer = new ExoPlayer
                 .Builder(this)
                 .build();
+        exoPlayer.setVolume(1.0f);
         exoPlayer.addListener(new Player.Listener() {
             @OptIn(markerClass = UnstableApi.class)
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                /*
-                3 = PAUSE
-                3 = PLAY
-                2 = NEXT
-                 */
                 if (playbackState == PlaybackState.STATE_STOPPED) {
                     stopForeground(true);
                     stopSelf();
