@@ -26,11 +26,13 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
+import androidx.media3.common.Tracks;
 import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaController;
@@ -121,7 +123,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     menuItem.setChecked(true);
                     Utils.setShowChord(this, true);
                 }
-                updateLyricDisplay();
+                updateLyricDisplay(pageNumber);
             }
         } else {
             // Go back menu finish current activity
@@ -133,6 +135,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     /* access modifiers changed from: protected */
     public void onStart() {
         super.onStart();
+        Utils.setDetailsController(this);
         SessionToken sessionToken = new SessionToken(this, new ComponentName(this, PlaybackService.class));
         ListenableFuture<MediaController> controllerFuture = new MediaController.Builder(this, sessionToken).buildAsync();
         controllerFuture.addListener(() -> {
@@ -140,11 +143,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 mediaController = controllerFuture.get();
                 startPlayingDoksu();
                 mediaController.addListener(new Player.Listener() {
-
-                    public void onMediaItemTransition(MediaItem mediaItem, int i) {
-                        Log.d("Doksu", "On MediaItemTransition");
-                        updateDataForPlayingMediaItem();
-                    }
                     @Override
                     public void onIsPlayingChanged(boolean isPlaying) {
                         if (isPlaying) {
@@ -154,12 +152,19 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         }
                     }
 
+                    @Override
+                    public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+                        Player.Listener.super.onMediaItemTransition(mediaItem, reason);
+                        Log.d("Doksu", "onMediaItemTransition");
+                    }
+
                     public void onPlaybackStateChanged(int i) {
+                        Log.d("Doksu", "Play State Changed : " + i);
                         if (i == PlaybackState.STATE_PLAYING) {
                             seekBar.setMax((int) mediaController.getDuration());
                             tvEnd.setText(Utils.formatToMinuteSeconds(mediaController.getDuration()));
                             mHandler.post(mRunnable);
-                            updateDataForPlayingMediaItem();
+//                            updateDataForPlayingMediaItem();
                             mediaController.play();
                         }
                     }
@@ -175,7 +180,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     private void startPlayingDoksu() {
         pageNumber = getIntent().getIntExtra("number", 0);
         updateLyricTitle(pageNumber);
-        updateLyricDisplay();
+        updateLyricDisplay(pageNumber);
         lyric.setTypeface(this.nkTypeFace);
         if (Utils.isReadMode(this)) {
             mediaLayout.setVisibility(View.GONE);
@@ -197,7 +202,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void playCurrentMediaWithUpdatedUI() {
-        updateDataForPlayingMediaItem();
+
+        pageNumber = mediaController.getCurrentMediaItemIndex() + 1;
+        updateDataForPlayingMediaItem(pageNumber);
         playCurrentMedia();
     }
 
@@ -338,12 +345,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             pageNumber = 1;
         }
         lyric.setAnimation(AnimationUtils.makeInAnimation(this, false));
-        title.setText(Utils.lyricTitle(pageNumber));
-        updateLyricDisplay();
+        updateLyricTitle(pageNumber);
+        updateLyricDisplay(pageNumber);
         lyricLayout.scrollTo(0, 0);
     }
 
-    private void updateLyricDisplay() {
+    private void updateLyricDisplay(int pageNumber) {
         SpannableStringBuilder spannableStringBuilder;
         if (Utils.isShowChord(this)) {
             String lyrics = Utils.readLyricsWithChords(this, pageNumber);
@@ -378,8 +385,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             pageNumber = Utils.lyricTitles().length;
         }
         lyric.setAnimation(AnimationUtils.makeInAnimation(this, true));
-        title.setText(Utils.lyricTitle(pageNumber));
-        updateLyricDisplay();
+        updateLyricTitle(pageNumber);
+        updateLyricDisplay(pageNumber);
         lyricLayout.scrollTo(0, 0);
     }
 
@@ -422,11 +429,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     /* access modifiers changed from: private */
-    private void updateDataForPlayingMediaItem() {
-        pageNumber = mediaController.getCurrentMediaItemIndex() + 1;
-        Utils.setPlayingSong(mediaController.getCurrentMediaItemIndex() + 1);
+    public void updateDataForPlayingMediaItem(int pageNumber) {
+        Utils.setPlayingSong(pageNumber);
         updateLyricTitle(pageNumber);
-        updateLyricDisplay();
+        updateLyricDisplay(pageNumber);
         lyricLayout.scrollTo(0, 0);
         MainActivity.setCurrentSong(pageNumber);
     }

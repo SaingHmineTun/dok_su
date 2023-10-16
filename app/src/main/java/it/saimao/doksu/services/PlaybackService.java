@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.session.PlaybackState;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
@@ -54,6 +55,15 @@ public class PlaybackService extends MediaSessionService {
                 .build();
         exoPlayer.setVolume(1.0f);
         exoPlayer.addListener(new Player.Listener() {
+
+            @OptIn(markerClass = UnstableApi.class)
+            @Override
+            public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+                Player.Listener.super.onMediaItemTransition(mediaItem, reason);
+                Log.d("Doksu", "On Media Item Transition at Service");
+                Utils.getDetailActivity().updateDataForPlayingMediaItem(exoPlayer.getCurrentMediaItemIndex() + 1);
+            }
+
             @OptIn(markerClass = UnstableApi.class)
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
@@ -63,6 +73,7 @@ public class PlaybackService extends MediaSessionService {
                 }
             }
         });
+        exoPlayer.prepare();
         initAllMediaItems();
         setupNotificationDesign();
         mediaSession = new MediaSession.Builder(this, exoPlayer).build();
