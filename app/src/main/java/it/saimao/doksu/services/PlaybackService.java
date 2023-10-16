@@ -66,7 +66,13 @@ public class PlaybackService extends MediaSessionService {
                 if (reason == 1) {
                     // REASON 1 is auto go next
                     // So we have to define for next and previous manually
-                        Utils.getDetailActivity().updateMediaView(exoPlayer.getCurrentMediaItemIndex() + 1, exoPlayer);
+                    Utils.getDetailActivity().updateMediaView(exoPlayer.getCurrentMediaItemIndex() + 1, exoPlayer);
+
+                    // Update Notification is sometimes unreliable
+                    nBuilder
+                            .setContentTitle(Utils.lyricTitle(Utils.getPlayingSong()))
+                            .setContentIntent(createCurrentContentIntent());
+                    nManager.notify(NOTIFICATION_ID, nBuilder.build());
                 }
             }
 
@@ -121,12 +127,14 @@ public class PlaybackService extends MediaSessionService {
 
     @OptIn(markerClass = UnstableApi.class)
     public PendingIntent createCurrentContentIntent() {
+        Log.d("Doksu", "Create Current Content Intent");
         Intent intent = new Intent(this, MainActivity.class);
         TaskStackBuilder create = TaskStackBuilder.create(this.getApplicationContext());
         create.addParentStack(MainActivity.class);
         create.addNextIntent(intent);
         Intent intent2 = new Intent(this, DetailActivity.class);
         intent2.putExtra("number", Utils.getPlayingSong());
+        Log.d("Doksu", "Number : " + Utils.getPlayingSong());
         create.addNextIntent(intent2);
         return create.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -136,7 +144,9 @@ public class PlaybackService extends MediaSessionService {
     public void onUpdateNotification(MediaSession session, boolean startInForegroundRequired) {
         super.onUpdateNotification(session, startInForegroundRequired);
         if (startInForegroundRequired) {
-            nBuilder.setContentTitle(Utils.lyricTitle(Utils.getPlayingSong()));
+            nBuilder
+                    .setContentTitle(Utils.lyricTitle(Utils.getPlayingSong()))
+                    .setContentIntent(createCurrentContentIntent());
             nManager.notify(NOTIFICATION_ID, nBuilder.build());
         }
     }
