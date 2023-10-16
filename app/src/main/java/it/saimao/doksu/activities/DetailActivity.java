@@ -29,7 +29,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
+import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
@@ -138,15 +140,11 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 mediaController = controllerFuture.get();
                 startPlayingDoksu();
                 mediaController.addListener(new Player.Listener() {
-                    /** Don't know why but doesn't work in new exoplayer
-                     *
-                     //                    public void onMediaItemTransition(MediaItem mediaItem, int i) {
-                     //                        Log.d("Doksu", "On Media Item Transition");
-                     //                        updateDataForPlayingMediaItem();
-                     //                    }
-                     *
-                     */
 
+                    public void onMediaItemTransition(MediaItem mediaItem, int i) {
+                        Log.d("Doksu", "On MediaItemTransition");
+                        updateDataForPlayingMediaItem();
+                    }
                     @Override
                     public void onIsPlayingChanged(boolean isPlaying) {
                         if (isPlaying) {
@@ -155,6 +153,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                             setPlayFabImage(R.drawable.ic_play_btn);
                         }
                     }
+
                     public void onPlaybackStateChanged(int i) {
                         if (i == PlaybackState.STATE_PLAYING) {
                             seekBar.setMax((int) mediaController.getDuration());
