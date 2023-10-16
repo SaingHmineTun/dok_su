@@ -60,8 +60,14 @@ public class PlaybackService extends MediaSessionService {
             @Override
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
                 Player.Listener.super.onMediaItemTransition(mediaItem, reason);
+                Log.d("Doksu", "REASON : " + reason);
                 Log.d("Doksu", "On Media Item Transition at Service");
-                Utils.getDetailActivity().updateDataForPlayingMediaItem(exoPlayer.getCurrentMediaItemIndex() + 1);
+                Log.d("Doksu", "Current Media Item Index : " + exoPlayer.getCurrentMediaItemIndex());
+                if (reason == 1) {
+                    // REASON 1 is auto go next
+                    // So we have to define for next and previous manually
+                        Utils.getDetailActivity().updateMediaView(exoPlayer.getCurrentMediaItemIndex() + 1, exoPlayer);
+                }
             }
 
             @OptIn(markerClass = UnstableApi.class)
@@ -112,6 +118,7 @@ public class PlaybackService extends MediaSessionService {
                 .setContentIntent(createCurrentContentIntent())
                 .setStyle(new MediaStyleNotificationHelper.MediaStyle(mediaSession));
     }
+
     @OptIn(markerClass = UnstableApi.class)
     public PendingIntent createCurrentContentIntent() {
         Intent intent = new Intent(this, MainActivity.class);
@@ -119,7 +126,7 @@ public class PlaybackService extends MediaSessionService {
         create.addParentStack(MainActivity.class);
         create.addNextIntent(intent);
         Intent intent2 = new Intent(this, DetailActivity.class);
-        intent2.putExtra("number", exoPlayer.getCurrentMediaItemIndex() + 1);
+        intent2.putExtra("number", Utils.getPlayingSong());
         create.addNextIntent(intent2);
         return create.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -129,8 +136,7 @@ public class PlaybackService extends MediaSessionService {
     public void onUpdateNotification(MediaSession session, boolean startInForegroundRequired) {
         super.onUpdateNotification(session, startInForegroundRequired);
         if (startInForegroundRequired) {
-            int currentIndex = exoPlayer.getCurrentMediaItemIndex();
-            nBuilder.setContentTitle(Utils.lyricTitle(currentIndex + 1));
+            nBuilder.setContentTitle(Utils.lyricTitle(Utils.getPlayingSong()));
             nManager.notify(NOTIFICATION_ID, nBuilder.build());
         }
     }

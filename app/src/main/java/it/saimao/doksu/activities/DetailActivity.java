@@ -26,13 +26,10 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
-import androidx.media3.common.Tracks;
 import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaController;
@@ -111,7 +108,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 } else {
                     menuItem.setChecked(true);
                     mediaLayout.setVisibility(View.VISIBLE);
-                    playMedia();
+                    playNewMedia();
                     Utils.setReadMode(this, false);
                 }
             } else if (menuItem.getTitle().equals(menuItems[1])) {
@@ -152,19 +149,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         }
                     }
 
-                    @Override
-                    public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
-                        Player.Listener.super.onMediaItemTransition(mediaItem, reason);
-                        Log.d("Doksu", "onMediaItemTransition");
-                    }
-
                     public void onPlaybackStateChanged(int i) {
-                        Log.d("Doksu", "Play State Changed : " + i);
                         if (i == PlaybackState.STATE_PLAYING) {
-                            seekBar.setMax((int) mediaController.getDuration());
-                            tvEnd.setText(Utils.formatToMinuteSeconds(mediaController.getDuration()));
+                            // ON & OFF read_mode will come to work here!
+                            // Need to update UI
+                            updateMediaView(mediaController.getCurrentMediaItemIndex() + 1, mediaController);
                             mHandler.post(mRunnable);
-//                            updateDataForPlayingMediaItem();
                             mediaController.play();
                         }
                     }
@@ -178,9 +168,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void startPlayingDoksu() {
+        // Call when new doksu song is selected
         pageNumber = getIntent().getIntExtra("number", 0);
-        updateLyricTitle(pageNumber);
-        updateLyricDisplay(pageNumber);
         lyric.setTypeface(this.nkTypeFace);
         if (Utils.isReadMode(this)) {
             mediaLayout.setVisibility(View.GONE);
@@ -193,8 +182,9 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             onRestart = false;
             playCurrentMediaWithUpdatedUI();
         } else {
-            playMedia();
+            playNewMedia();
         }
+        updateMediaView(pageNumber, mediaController);
     }
 
     private void updateLyricTitle(int pageNumber) {
@@ -202,9 +192,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void playCurrentMediaWithUpdatedUI() {
-
         pageNumber = mediaController.getCurrentMediaItemIndex() + 1;
-        updateDataForPlayingMediaItem(pageNumber);
+        updateMediaView(pageNumber, mediaController);
         playCurrentMedia();
     }
 
@@ -310,17 +299,22 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     private void playCurrentMedia() {
         try {
-            seekBar.setMax((int) mediaController.getDuration());
-            tvEnd.setText(Utils.formatToMinuteSeconds(mediaController.getDuration()));
+            /*
+            Re-enter the playing song will only update UI!
+             */
+            updateMediaView(mediaController.getCurrentMediaItemIndex() + 1, mediaController);
             mHandler.post(mRunnable);
-            Utils.setPlayingSong(mediaController.getCurrentMediaItemIndex() + 1);
+            Log.d("Doksu", "RE-ENTER : " + mediaController.isPlaying());
+            int playIcon = mediaController.isPlaying() ? R.drawable.ic_pause_btn : R.drawable.ic_play_btn;
+            setPlayFabImage(playIcon);
         } catch (Exception ignored) {
         }
     }
 
-    private void playMedia() {
+    private void playNewMedia() {
         mediaController.prepare();
         mediaController.seekTo(pageNumber - 1, -1);
+        mediaController.play();
     }
 
     public void onClick(View view) {
@@ -339,15 +333,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void onPageNext() {
-        int i2 = pageNumber + 1;
-        pageNumber = i2;
-        if (i2 > Utils.lyricTitles().length) {
+        pageNumber++;
+        if (pageNumber > Utils.lyricTitles().length) {
             pageNumber = 1;
         }
         lyric.setAnimation(AnimationUtils.makeInAnimation(this, false));
-        updateLyricTitle(pageNumber);
-        updateLyricDisplay(pageNumber);
-        lyricLayout.scrollTo(0, 0);
+        updateMediaView(pageNumber, mediaController);
     }
 
     private void updateLyricDisplay(int pageNumber) {
@@ -385,9 +376,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             pageNumber = Utils.lyricTitles().length;
         }
         lyric.setAnimation(AnimationUtils.makeInAnimation(this, true));
-        updateLyricTitle(pageNumber);
-        updateLyricDisplay(pageNumber);
-        lyricLayout.scrollTo(0, 0);
+        updateMediaView(pageNumber, mediaController);
     }
 
     public void onTrackPLay() {
@@ -397,14 +386,14 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 mediaController.seekTo(pageNumber - 1, -1);
             }
             mediaController.play();
-            fabPlay.setImageResource(R.drawable.ic_pause_btn);
+            setPlayFabImage(R.drawable.ic_pause_btn);
         }
     }
 
     public void onTrackPause() {
         if (mediaController != null && mediaController.isPlaying()) {
             mediaController.pause();
-            fabPlay.setImageResource(R.drawable.ic_play_btn);
+            setPlayFabImage(R.drawable.ic_play_btn);
         }
     }
 
@@ -412,7 +401,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (mediaController.hasPreviousMediaItem()) {
             mediaController.seekToPreviousMediaItem();
             lyric.setAnimation(AnimationUtils.makeInAnimation(this, true));
-            fabPlay.setImageResource(R.drawable.ic_pause_btn);
+            updateMediaView(mediaController.getCurrentMediaItemIndex() + 1, mediaController);
         } else {
             Toast.makeText(this, "No previous songs", Toast.LENGTH_SHORT).show();
         }
@@ -422,17 +411,26 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (mediaController.hasNextMediaItem()) {
             mediaController.seekToNextMediaItem();
             lyric.setAnimation(AnimationUtils.makeInAnimation(this, false));
-            fabPlay.setImageResource(R.drawable.ic_pause_btn);
+            updateMediaView(mediaController.getCurrentMediaItemIndex() + 1, mediaController);
         } else {
             Toast.makeText(this, "No next songs", Toast.LENGTH_SHORT).show();
         }
     }
 
     /* access modifiers changed from: private */
-    public void updateDataForPlayingMediaItem(int pageNumber) {
+    public void updateMediaView(int pageNumber, Player player) {
+        Log.d("Doksu", "Update Media View - Page Number : " + pageNumber);
+        if (pageNumber == 0) {
+            pageNumber = Utils.lyricTitles().length;
+        } else if (pageNumber > Utils.lyricTitles().length) {
+            pageNumber = 1;
+        }
+        this.pageNumber = pageNumber;
         Utils.setPlayingSong(pageNumber);
         updateLyricTitle(pageNumber);
         updateLyricDisplay(pageNumber);
+        tvEnd.setText(Utils.formatToMinuteSeconds(player.getDuration()));
+        seekBar.setMax((int) player.getDuration());
         lyricLayout.scrollTo(0, 0);
         MainActivity.setCurrentSong(pageNumber);
     }
