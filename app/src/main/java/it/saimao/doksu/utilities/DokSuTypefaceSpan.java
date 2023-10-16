@@ -1,4 +1,4 @@
-package it.saimao.doksu;
+package it.saimao.doksu.utilities;
 
 import android.graphics.Color;
 import android.graphics.Paint;

@@ -1,4 +1,4 @@
-package it.saimao.doksu;
+package it.saimao.doksu.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -13,6 +13,11 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import it.saimao.doksu.adapters.AboutAdapter;
+import it.saimao.doksu.utilities.DokSuTypefaceSpan;
+import it.saimao.doksu.R;
+import it.saimao.doksu.utilities.Utils;
 
 /* renamed from: it.saimao.doksu.AboutUsActivity */
 public class AboutActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {

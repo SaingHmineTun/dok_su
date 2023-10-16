@@ -1,4 +1,4 @@
-package it.saimao.doksu;
+package it.saimao.doksu.activities;
 
 import android.content.ComponentName;
 import android.graphics.Color;
@@ -30,7 +30,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.media3.common.Player;
-import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaController;
 import androidx.media3.session.SessionToken;
@@ -41,6 +40,11 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import it.saimao.doksu.utilities.DokSuTypefaceSpan;
+import it.saimao.doksu.services.PlaybackService;
+import it.saimao.doksu.R;
+import it.saimao.doksu.utilities.Utils;
 
 @UnstableApi
 public class DetailActivity extends AppCompatActivity implements View.OnClickListener, View.OnTouchListener {

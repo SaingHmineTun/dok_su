@@ -1,4 +1,4 @@
-package it.saimao.doksu;
+package it.saimao.doksu.adapters;
 
 import android.app.Activity;
 import android.graphics.Typeface;
@@ -10,7 +10,9 @@ import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
 
-/* renamed from: it.saimao.doksu.MyListAdapter */
+import it.saimao.doksu.R;
+
+/* renamed from: it.saimao.doksu.adapters.MyListAdapter */
 public class MyListAdapter extends ArrayAdapter<String> {
     private final Activity context;
     private final String[] titles;

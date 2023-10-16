@@ -1,4 +1,4 @@
-package it.saimao.doksu;
+package it.saimao.doksu.utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,6 +19,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import it.saimao.doksu.R;
 
 public class Utils {
 

@@ -1,9 +1,7 @@
-package it.saimao.doksu;
+package it.saimao.doksu.activities;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -21,11 +19,14 @@ import androidx.media3.common.util.UnstableApi;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
-@UnstableApi /* renamed from: it.saimao.doksu.MainActivity */
+import it.saimao.doksu.utilities.DokSuTypefaceSpan;
+import it.saimao.doksu.adapters.MyListAdapter;
+import it.saimao.doksu.R;
+import it.saimao.doksu.utilities.Utils;
+
+@UnstableApi /* renamed from: it.saimao.doksu.activities.MainActivity */
 public class MainActivity extends AppCompatActivity {
     private static ExtendedFloatingActionButton fabPlaying;
-
-    /* access modifiers changed from: protected */
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.activity_main);

@@ -1,4 +1,4 @@
-package it.saimao.doksu;
+package it.saimao.doksu.adapters;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
+
+import it.saimao.doksu.R;
 
 /* renamed from: it.saimao.doksu.MaoAdapter */
 public class AboutAdapter extends BaseAdapter {

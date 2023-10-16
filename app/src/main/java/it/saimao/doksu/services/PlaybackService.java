@@ -1,4 +1,4 @@
-package it.saimao.doksu;
+package it.saimao.doksu.services;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -15,12 +15,10 @@ import androidx.annotation.OptIn;
 import androidx.core.app.NotificationCompat;
 import androidx.media3.common.MediaItem;
 import androidx.media3.common.Player;
-import androidx.media3.common.util.Log;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.datasource.RawResourceDataSource;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.session.CommandButton;
-import androidx.media3.session.MediaController;
 import androidx.media3.session.MediaNotification;
 import androidx.media3.session.MediaSession;
 import androidx.media3.session.MediaSessionService;
@@ -30,6 +28,11 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import it.saimao.doksu.R;
+import it.saimao.doksu.utilities.Utils;
+import it.saimao.doksu.activities.DetailActivity;
+import it.saimao.doksu.activities.MainActivity;
 
 public class PlaybackService extends MediaSessionService {
 
