@@ -60,19 +60,22 @@ public class PlaybackService extends MediaSessionService {
             @Override
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
                 Player.Listener.super.onMediaItemTransition(mediaItem, reason);
-                Log.d("Doksu", "REASON : " + reason);
-                Log.d("Doksu", "On Media Item Transition at Service");
-                Log.d("Doksu", "Current Media Item Index : " + exoPlayer.getCurrentMediaItemIndex());
+                Log.d("Doksu", "On Media Item Transition");
                 if (reason == 1) {
                     // REASON 1 is auto go next
                     // So we have to define for next and previous manually
                     Utils.getDetailActivity().updateMediaView(exoPlayer.getCurrentMediaItemIndex() + 1, exoPlayer);
 
                     // Update Notification is sometimes unreliable
-                    nBuilder
-                            .setContentTitle(Utils.lyricTitle(Utils.getPlayingSong()))
-                            .setContentIntent(createCurrentContentIntent());
-                    nManager.notify(NOTIFICATION_ID, nBuilder.build());
+                    if (currentBIndingPageNumber != Utils.getPageNumber()) {
+                        currentBIndingPageNumber = Utils.getPageNumber();
+                        String title = Utils.lyricTitle(currentBIndingPageNumber);
+                        Log.d("Doksu", "Noti TItle : " + title);
+                        nBuilder
+                                .setContentTitle(title)
+                                .setContentIntent(createCurrentContentIntent());
+                        nManager.notify(NOTIFICATION_ID, nBuilder.build());
+                    }
                 }
             }
 
@@ -114,27 +117,35 @@ public class PlaybackService extends MediaSessionService {
 
     @OptIn(markerClass = UnstableApi.class)
     private void createNoti(MediaSession mediaSession) {
-        nManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nManager.createNotificationChannel(new NotificationChannel(notificationId, "channel", NotificationManager.IMPORTANCE_LOW));
+        if (nManager == null || nBuilder == null || currentBIndingPageNumber != Utils.getPageNumber()) {
+            Log.d("Doksu", "Create Noti");
+            nManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            nManager.createNotificationChannel(new NotificationChannel(notificationId, "channel", NotificationManager.IMPORTANCE_LOW));
 
-        final Bitmap decodeResource = BitmapFactory.decodeResource(getResources(), R.drawable.noti_bg);
-        nBuilder = new NotificationCompat.Builder(this, notificationId)
-                .setSmallIcon(R.drawable.noti)
-                .setLargeIcon(decodeResource)
-                .setContentIntent(createCurrentContentIntent())
-                .setStyle(new MediaStyleNotificationHelper.MediaStyle(mediaSession));
+            final Bitmap decodeResource = BitmapFactory.decodeResource(getResources(), R.drawable.noti_bg);
+            currentBIndingPageNumber = Utils.getPageNumber();
+            String title = Utils.lyricTitle(currentBIndingPageNumber);
+            Log.d("Doksu", "Noti TItle : " + title);
+            nBuilder = new NotificationCompat.Builder(this, notificationId)
+                    .setContentTitle(title)
+                    .setSmallIcon(R.drawable.noti)
+                    .setLargeIcon(decodeResource)
+                    .setContentIntent(createCurrentContentIntent())
+                    .setStyle(new MediaStyleNotificationHelper.MediaStyle(mediaSession));
+        }
     }
+
+    private int currentBIndingPageNumber;
 
     @OptIn(markerClass = UnstableApi.class)
     public PendingIntent createCurrentContentIntent() {
-        Log.d("Doksu", "Create Current Content Intent");
         Intent intent = new Intent(this, MainActivity.class);
         TaskStackBuilder create = TaskStackBuilder.create(this.getApplicationContext());
         create.addParentStack(MainActivity.class);
         create.addNextIntent(intent);
         Intent intent2 = new Intent(this, DetailActivity.class);
-        intent2.putExtra("number", Utils.getPlayingSong());
-        Log.d("Doksu", "Number : " + Utils.getPlayingSong());
+        intent2.putExtra("number", currentBIndingPageNumber);
+        Log.d("Doksu", "Number : " +currentBIndingPageNumber);
         create.addNextIntent(intent2);
         return create.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -143,9 +154,12 @@ public class PlaybackService extends MediaSessionService {
     @OptIn(markerClass = UnstableApi.class)
     public void onUpdateNotification(MediaSession session, boolean startInForegroundRequired) {
         super.onUpdateNotification(session, startInForegroundRequired);
-        if (startInForegroundRequired) {
+        if (startInForegroundRequired && (currentBIndingPageNumber != Utils.getPageNumber())) {
+            currentBIndingPageNumber = Utils.getPageNumber();
+            String title = Utils.lyricTitle(currentBIndingPageNumber);
+            Log.d("Doksu", "Noti TItle : " + title);
             nBuilder
-                    .setContentTitle(Utils.lyricTitle(Utils.getPlayingSong()))
+                    .setContentTitle(title)
                     .setContentIntent(createCurrentContentIntent());
             nManager.notify(NOTIFICATION_ID, nBuilder.build());
         }

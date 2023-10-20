@@ -34,12 +34,12 @@ public class MainActivity extends AppCompatActivity {
         MyListAdapter myListAdapter = new MyListAdapter(this, Utils.lyricTitles());
         ListView list = findViewById(R.id.list);
         fabPlaying = findViewById(R.id.fab_playing);
-        if (Utils.getPlayingSong() == 0) {
+        if (Utils.getPageNumber() == 0) {
             fabPlaying.hide();
         } else {
             fabPlaying.show();
             ExtendedFloatingActionButton extendedFloatingActionButton = fabPlaying;
-            extendedFloatingActionButton.setText(Utils.getPlayingSong() + "");
+            extendedFloatingActionButton.setText(Utils.getPageNumber() + "");
         }
         fabPlaying.setOnClickListener(view -> MainActivity.this.gotoCurrentActivity());
         list.setAdapter(myListAdapter);
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     /* access modifiers changed from: private */
     public void gotoCurrentActivity() {
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra("number", Utils.getPlayingSong());
+        intent.putExtra("number", Utils.getPageNumber());
         startActivity(intent);
     }
 
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         }
         fabPlaying.show();
         ExtendedFloatingActionButton extendedFloatingActionButton = fabPlaying;
-        extendedFloatingActionButton.setText(Utils.getPlayingSong() + "");
+        extendedFloatingActionButton.setText(Utils.getPageNumber() + "");
     }
 
     public static void setCurrentSong(int i) {
