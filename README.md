@@ -29,7 +29,7 @@ Most of the songs will play with Guitar and some singers' voices.
 We believe it would be a great help for those who are practicing Dok Su songs, especially for the Guitarists.
 
 Moreover, the app also supports Read Mode function meaning you can turn off the song to see the lyrics of the song more clearly.
-Just simply disable ၽုၺ်ႇသႅင်ၵႂၢမ်း menu from the top right menu items.
+Just simply disable ၽုၺ်ႇသႅင်ၵႂၢမ်း (Enalbe Song) menu from the top right menu items.
 We believe it will also provide a great help for those who would like to read only the lyrics without further disturbances, especially for the singers who are going to sing Dok Su songs.
 In addition, we have added an important function for Guitarists. It's called ၼႄၶွတ်ႇတိင်ႇ (Show Giluitar Chord). 
 As suggested, enable it will show guitar chords in both LyricView and MediaView. 
