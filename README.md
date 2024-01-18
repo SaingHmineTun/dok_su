@@ -1,6 +1,8 @@
 # dok_su
 
-Dok Su App consists of 36 Dok Su songs.
+***You can downaload it from Play Store!***
+
+**Dok Su App consists of 36 Dok Su songs.**
 
 မႂ်ႇသုင်ၶႃႈ ...
 Dok Su (ၵႂၢမ်းတုၵ်းသူး) ၼႆႉ ပဵၼ်ဢႅပ်း ဢၼ်မီး သဵင်ၽဵင်းၵႂၢမ်းတုၵ်းသူး 36 ပုၵ်ႈဝႆႉယဝ်ႉ။
@@ -36,3 +38,18 @@ As suggested, enable it will show guitar chords in both LyricView and MediaView.
 This is to assist guitarists who are going to play it. 
 
 Sai Mao (Muse)
+
+
+**App UI**
+
+*Main UI displays song collections that you can choose to play or view*
+![doksu](https://github.com/SaingHmineTun/dok_su/assets/41017501/d0592366-589d-404f-9f2c-5322311a85bd)
+
+
+*Player UI displays the song that you have chosen from Main UI*
+*Here exists two features - (1) You play the song (2) You view the lyrics*
+![doksu2](https://github.com/SaingHmineTun/dok_su/assets/41017501/eaa2282a-d791-40e5-8fc8-831e654debc8)
+
+
+*This is About Page*
+![doksu3](https://github.com/SaingHmineTun/dok_su/assets/41017501/04d13895-1ca2-4115-9aed-e1fe27a83af2)
