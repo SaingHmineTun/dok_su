@@ -1,21 +1,15 @@
 package it.saimao.doksu.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
+import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 
-import it.saimao.doksu.R;
 import it.saimao.doksu.adapters.DokSuAdapter;
 import it.saimao.doksu.databinding.ActivityMainBinding;
-import it.saimao.doksu.utilities.DokSuTypefaceSpan;
 import it.saimao.doksu.utilities.Utils;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         initDokSuSongs();
-        initPlayingFab();
         initListeners();
     }
 
@@ -36,15 +29,16 @@ public class MainActivity extends AppCompatActivity {
         binding.mAboutUs.setOnClickListener(v -> {
             startActivity(new Intent(this, AboutUsActivity.class));
         });
-    }
-
-    private void initPlayingFab() {
-        if (!Utils.isPlaying()) {
-            binding.fabPlaying.hide();
-        } else {
-            binding.fabPlaying.show();
-            binding.fabPlaying.setText(String.valueOf(Utils.getPageNumber()));
-        }
+        Utils.playing.observeForever(isPlaying -> {
+            if (isPlaying) {
+                binding.fabPlaying.setVisibility(View.VISIBLE);
+            } else {
+                binding.fabPlaying.setVisibility(View.GONE);
+            }
+        });
+        Utils.pageNumber.observeForever(pageNumber -> {
+            binding.fabPlaying.setText(String.valueOf(pageNumber));
+        });
     }
 
     private void initDokSuSongs() {
@@ -67,15 +61,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
+        Log.d("Kham", "Main Activity On Restart");
         if (Utils.isReadMode(this)) {
             binding.fabPlaying.hide();
             return;
         }
-        initPlayingFab();
-        setCurrentSong(Utils.getPageNumber());
+        updateFabSongNumber(Utils.getPageNumber());
     }
 
-    public void setCurrentSong(int i) {
+    public void updateFabSongNumber(int i) {
         binding.fabPlaying.setText(String.valueOf(i));
     }
 }

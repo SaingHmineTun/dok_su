@@ -93,6 +93,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         binding.fabNext.setOnClickListener(this);
         binding.fabPlay.setOnClickListener(this);
         binding.fabPrev.setOnClickListener(this);
+        binding.fabStop.setOnClickListener(this);
         binding.cbShowGuitarChord.setOnCheckedChangeListener((buttonView, isChecked) -> {
             Utils.setShowChord(this, isChecked);
             updateLyricDisplay(Utils.getPageNumber());
@@ -100,18 +101,27 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
         binding.cbPlayDokSuSong.setOnCheckedChangeListener((buttonView, isChecked) -> {
             Utils.setReadMode(this, !isChecked);
-            // TODO : Hide Or Show Media Inputs
             if (!isChecked) {
-                binding.llSeekBar.setVisibility(View.GONE);
-                binding.llPlaySong.setVisibility(View.GONE);
+                showMediaInput(false);
                 mediaController.stop();
             } else {
-                binding.llSeekBar.setVisibility(View.VISIBLE);
-                binding.llPlaySong.setVisibility(View.VISIBLE);
+                showMediaInput(true);
                 initMediaPlayer();
             }
         });
 
+    }
+
+    private void showMediaInput(boolean isShowing) {
+        if (isShowing) {
+            binding.llSeekBar.setVisibility(View.VISIBLE);
+            binding.llPlaySong.setVisibility(View.VISIBLE);
+            binding.llStopSong.setVisibility(View.VISIBLE);
+        } else {
+            binding.llSeekBar.setVisibility(View.GONE);
+            binding.llPlaySong.setVisibility(View.GONE);
+            binding.llStopSong.setVisibility(View.GONE);
+        }
     }
 
     private void initTypeface() {
@@ -135,8 +145,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void initLyricReader() {
-        binding.llSeekBar.setVisibility(View.GONE);
-        binding.llPlaySong.setVisibility(View.GONE);
+        showMediaInput(false);
         updateMediaView(Utils.getPageNumber(), null);
     }
 
@@ -151,10 +160,13 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                     mediaController.addListener(new Player.Listener() {
                         @Override
                         public void onIsPlayingChanged(boolean isPlaying) {
+                            Log.d("Kham", "Media Controller Is Playing : " + isPlaying);
                             if (isPlaying) {
                                 setPlayFabImage(R.drawable.ic_pause);
+                                Utils.setPlaying(true);
                             } else {
                                 setPlayFabImage(R.drawable.ic_play);
+                                Utils.setPlaying(false);
                             }
                         }
 
@@ -162,7 +174,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                         public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
                             Player.Listener.super.onMediaItemTransition(mediaItem, reason);
                             if (reason == 1) {
-                                Log.d("Kham", "onMediaItemTransition in DetailActivity");
                                 updateMediaView(mediaController.getCurrentMediaItemIndex() + 1, mediaController);
                             }
                         }
@@ -188,9 +199,7 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
 
     // Call by Media Player only!
     private void startPlayingDokSuSong() {
-        Utils.setPlaying(true);
-        binding.llSeekBar.setVisibility(View.VISIBLE);
-        binding.llPlaySong.setVisibility(View.VISIBLE);
+        showMediaInput(true);
         if (Utils.getPageNumber() == mediaController.getCurrentMediaItemIndex() + 1) {
             playCurrentMedia();
         } else if (onRestart) {
@@ -226,22 +235,19 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 x2 = motionEvent.getX();
                 float deltaX = x2 - x1;
                 if (deltaX > 300) {
-                    if (Utils.isReadMode(this))
-                        onPagePrev();
-                    else
-                        onTrackPrev();
+                    if (Utils.isReadMode(this)) onPagePrev();
+                    else onTrackPrev();
 
                 } else if (deltaX < -300) {
-                    if (Utils.isReadMode(this))
-                        onPageNext();
-                    else
-                        onTrackNext();
+                    if (Utils.isReadMode(this)) onPageNext();
+                    else onTrackNext();
                 }
             }
         }
         return false;
     }
 
+    @Override
     protected void onPause() {
         super.onPause();
         if (mediaController != null && mediaController.isPlaying()) {
@@ -276,10 +282,8 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
     public void onClick(View view) {
         var id = view.getId();
         if (id == R.id.fab_next) {
-            if (Utils.isReadMode(this))
-                onPageNext();
-            else
-                onTrackNext();
+            if (Utils.isReadMode(this)) onPageNext();
+            else onTrackNext();
         } else if (id == R.id.fab_play) {
             if (mediaController.isPlaying()) {
                 onTrackPause();
@@ -287,10 +291,12 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
                 onTrackPLay();
             }
         } else if (id == R.id.fab_prev) {
-            if (Utils.isReadMode(this))
-                onPagePrev();
-            else
-                onTrackPrev();
+            if (Utils.isReadMode(this)) onPagePrev();
+            else onTrackPrev();
+        } else if (id == R.id.fab_stop) {
+            Utils.setPlaying(false);
+            onTrackStop();
+            finish();
         }
     }
 
@@ -355,7 +361,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
             }
             mediaController.play();
             setPlayFabImage(R.drawable.ic_pause);
-            Utils.setPlaying(true);
         }
     }
 
@@ -363,7 +368,6 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         if (mediaController != null && mediaController.isPlaying()) {
             mediaController.pause();
             setPlayFabImage(R.drawable.ic_play);
-            Utils.setPlaying(false);
         }
     }
 
@@ -375,6 +379,10 @@ public class DetailActivity extends AppCompatActivity implements View.OnClickLis
         } else {
             Toast.makeText(this, "No previous songs", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void onTrackStop() {
+        if (mediaController != null) mediaController.stop();
     }
 
     public void onTrackNext() {
