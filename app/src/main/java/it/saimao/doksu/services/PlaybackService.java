@@ -11,6 +11,7 @@ import android.media.session.PlaybackState;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.OptIn;
 import androidx.core.app.NotificationCompat;
@@ -40,10 +41,15 @@ public class PlaybackService extends MediaSessionService {
     private List<MediaItem> allMediaItems;
     private MediaSession mediaSession;
     private ExoPlayer exoPlayer;
+    private int currentBindingPageNumber;
+    private final String notificationId = "sai_mao";
+    private final int NOTIFICATION_ID = 2846;
+    private NotificationCompat.Builder nBuilder;
+    private NotificationManager nManager;
 
     @Nullable
     @Override
-    public MediaSession onGetSession(MediaSession.ControllerInfo controllerInfo) {
+    public MediaSession onGetSession(@NonNull MediaSession.ControllerInfo controllerInfo) {
         return mediaSession;
     }
 
@@ -56,21 +62,18 @@ public class PlaybackService extends MediaSessionService {
         exoPlayer.setVolume(1.0f);
         exoPlayer.addListener(new Player.Listener() {
 
-            @OptIn(markerClass = UnstableApi.class)
             @Override
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
                 Player.Listener.super.onMediaItemTransition(mediaItem, reason);
-                Log.d("Doksu", "On Media Item Transition");
                 if (reason == 1) {
                     // REASON 1 is auto go next
                     // So we have to define for next and previous manually
-                    Utils.getDetailActivity().updateMediaView(exoPlayer.getCurrentMediaItemIndex() + 1, exoPlayer);
-
+                    Log.d("Kham", "onMediaItemTransition in PlaybackService");
                     // Update Notification is sometimes unreliable
-                    if (currentBIndingPageNumber != Utils.getPageNumber()) {
-                        currentBIndingPageNumber = Utils.getPageNumber();
-                        String title = Utils.lyricTitle(currentBIndingPageNumber);
-                        Log.d("Doksu", "Noti TItle : " + title);
+                    if (currentBindingPageNumber != Utils.getPageNumber()) {
+                        currentBindingPageNumber = Utils.getPageNumber();
+                        String title = Utils.lyricTitle(currentBindingPageNumber);
+                        Log.d("Doksu", "Noti Title : " + title);
                         nBuilder
                                 .setContentTitle(title)
                                 .setContentIntent(createCurrentContentIntent());
@@ -97,34 +100,30 @@ public class PlaybackService extends MediaSessionService {
     @OptIn(markerClass = UnstableApi.class)
     private void setupNotificationDesign() {
         setMediaNotificationProvider(new MediaNotification.Provider() {
+            @NonNull
             @Override
-            public MediaNotification createNotification(MediaSession mediaSession, ImmutableList<CommandButton> customLayout, MediaNotification.ActionFactory actionFactory, Callback onNotificationChangedCallback) {
+            public MediaNotification createNotification(@NonNull MediaSession mediaSession, @NonNull ImmutableList<CommandButton> customLayout, @NonNull MediaNotification.ActionFactory actionFactory, @NonNull Callback onNotificationChangedCallback) {
                 createNoti(mediaSession);
                 return new MediaNotification(NOTIFICATION_ID, nBuilder.build());
             }
 
             @Override
-            public boolean handleCustomCommand(MediaSession session, String action, Bundle extras) {
+            public boolean handleCustomCommand(@NonNull MediaSession session, @NonNull String action, @NonNull Bundle extras) {
                 return false;
             }
         });
     }
 
-    private final String notificationId = "sai_mao";
-    private final int NOTIFICATION_ID = 2846;
-    private NotificationCompat.Builder nBuilder;
-    private NotificationManager nManager;
-
     @OptIn(markerClass = UnstableApi.class)
     private void createNoti(MediaSession mediaSession) {
-        if (nManager == null || nBuilder == null || currentBIndingPageNumber != Utils.getPageNumber()) {
+        if (nManager == null || nBuilder == null || currentBindingPageNumber != Utils.getPageNumber()) {
             Log.d("Doksu", "Create Noti");
             nManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             nManager.createNotificationChannel(new NotificationChannel(notificationId, "channel", NotificationManager.IMPORTANCE_LOW));
 
             final Bitmap decodeResource = BitmapFactory.decodeResource(getResources(), R.drawable.noti_bg);
-            currentBIndingPageNumber = Utils.getPageNumber();
-            String title = Utils.lyricTitle(currentBIndingPageNumber);
+            currentBindingPageNumber = Utils.getPageNumber();
+            String title = Utils.lyricTitle(currentBindingPageNumber);
             Log.d("Doksu", "Noti TItle : " + title);
             nBuilder = new NotificationCompat.Builder(this, notificationId)
                     .setContentTitle(title)
@@ -135,7 +134,6 @@ public class PlaybackService extends MediaSessionService {
         }
     }
 
-    private int currentBIndingPageNumber;
 
     @OptIn(markerClass = UnstableApi.class)
     public PendingIntent createCurrentContentIntent() {
@@ -144,8 +142,8 @@ public class PlaybackService extends MediaSessionService {
         create.addParentStack(MainActivity.class);
         create.addNextIntent(intent);
         Intent intent2 = new Intent(this, DetailActivity.class);
-        intent2.putExtra("number", currentBIndingPageNumber);
-        Log.d("Doksu", "Number : " +currentBIndingPageNumber);
+        intent2.putExtra("number", currentBindingPageNumber);
+        Log.d("Doksu", "Number : " + currentBindingPageNumber);
         create.addNextIntent(intent2);
         return create.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -154,9 +152,9 @@ public class PlaybackService extends MediaSessionService {
     @OptIn(markerClass = UnstableApi.class)
     public void onUpdateNotification(MediaSession session, boolean startInForegroundRequired) {
         super.onUpdateNotification(session, startInForegroundRequired);
-        if (startInForegroundRequired && (currentBIndingPageNumber != Utils.getPageNumber())) {
-            currentBIndingPageNumber = Utils.getPageNumber();
-            String title = Utils.lyricTitle(currentBIndingPageNumber);
+        if (startInForegroundRequired && (currentBindingPageNumber != Utils.getPageNumber())) {
+            currentBindingPageNumber = Utils.getPageNumber();
+            String title = Utils.lyricTitle(currentBindingPageNumber);
             Log.d("Doksu", "Noti TItle : " + title);
             nBuilder
                     .setContentTitle(title)

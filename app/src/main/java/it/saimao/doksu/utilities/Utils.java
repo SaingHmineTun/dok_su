@@ -21,10 +21,9 @@ import it.saimao.doksu.activities.DetailActivity;
 public class Utils {
 
     private static int pageNumber;
+    private static boolean playing;
     private static final int[] mediaItemsID = {R.raw.tmk1, R.raw.tmk2, R.raw.tmk3, R.raw.tmk4, R.raw.tmk5, R.raw.tmk6, R.raw.tmk7, R.raw.tmk8, R.raw.tmk9, R.raw.tmk10, R.raw.tmk11, R.raw.tmk12, R.raw.tmk13, R.raw.tmk14, R.raw.tmk15, R.raw.tmk16, R.raw.tmk17, R.raw.tmk18, R.raw.tmk19, R.raw.tmk20, R.raw.tmk21, R.raw.tmk22, R.raw.tmk23, R.raw.tmk24, R.raw.tmk25, R.raw.tmk26, R.raw.tmk27, R.raw.tmk28, R.raw.tmk29, R.raw.tmk30, R.raw.tmk31, R.raw.tmk32, R.raw.tmk33, R.raw.tmk34, R.raw.tmk35, R.raw.tmk36};
     private static final String[] titles = {"ၵႃႈပၼ်ႇၵွင်ႊ", "ၵႂၢမ်းၶွပ်ႈၸႂ်", "ၵႂၢမ်းၸူမ်းပီႈၼွင့် (1)", "ၵႂၢမ်းၸူမ်းပီႈၼွင့် (2)", "ၶိူဝ်းသိူဝ်လၢႆး", "ၶတ်းၸႂ်ႁႂ်ႈမႂ်ႇသုင်", "ၶိုၼ်းဢွမ်ႇၸႂ်ႁပ့်ပီႊမႂ်ႇ", "ၶွပ်ႈၶိုၼ်းပီႊမႂ်ႇ", "သဵင်သၢႆၸႂ်ပီႊမႂ်ႇ", "သဵင်ပၢႆးမွၼ်းတုၵ်းသူး", "တႆးႁူပ့်ထူပ်းၵၼ်", "တုၵ်းသူးမၢႆ (1)", "တုၵ်းသူးမၢႆ (2)", "တုၵ်းသူးမၢႆ (3)", "တုၵ်းသူးသၢႆၸႂ်ၸိူဝ့်", "တၢင်းႁၢင်ႊလီၽၵ်းတူၸႂ်", "ထုင်းၾိင်ႈယဵၼ်ႇငႄႈသၢႆၸႂ်တႆး", "ပီႊမႂ်ႇတႆး (1)", "ပီႊမႂ်ႇတႆး (2)", "ပီႊမႂ်ႇတႆး (3)", "ပွႆးလိူၼ်ၸဵင်ပီႊမႂ်ႇတႆး", "ပဵၼ်ၸႂ်လဵဝ်ၵၼ်ႁဝ်း", "ၽွင်းၶၢဝ်းၵတ်းပီႊမႂ်ႇ", "မႂ်ႇသုင်", "ယႃႇႁႂ်ႈဢဵၼ်ႁႅင်းႁၢႆ", "ယွၼ်းသူးထိုင်ၸဝ်ႈႁိူၼ်း", "ယွၼ်းသူးပၼ်ၸဝ်ႈႁိူၼ်း", "ယွၼ်းသူးႁႂ်ႈမႂ်ႇသုင်", "ယွၼ်းတုၵ်းသူး", "ႁူႉလႄႈၸၢႆးယိင်းတႆး", "ႁဝ်းၼမ်ႁဝ်းလီ ပႂ်ႉႁပ့်ပီႊမႂ်ႇ", "ႁဝ်းၽွမ့်ၵၼ်", "ႁဝ်းဝႅင်းၵႃႈပၼ်ႇၵွင်ႊ", "ႁႂ်ႈယူႇလီမီးငိုၼ်း", "ႁူမ်ႈႁႅင်းပီႊမႂ်ႇတႆး", "ဢွၼ်ၵၼ်ၶတ်းၸႂ်"};
-    private static DetailActivity detailActivity;
-
 
     public static int getPageNumber() {
         return pageNumber;
@@ -41,7 +40,7 @@ public class Utils {
     public static void setReadMode(Context context, boolean z) {
         SharedPreferences.Editor edit = context.getSharedPreferences("mao", 0).edit();
         edit.putBoolean("read_mode", z);
-        edit.commit();
+        edit.apply();
     }
 
     public static String[] lyricTitles() {
@@ -120,8 +119,6 @@ public class Utils {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    private static boolean showChord;
-
     public static boolean isShowChord(Context context) {
         return context.getSharedPreferences("mao", 0).getBoolean("show_chord", false);
     }
@@ -129,15 +126,15 @@ public class Utils {
     public static void setShowChord(Context context, boolean showChord) {
         SharedPreferences.Editor edit = context.getSharedPreferences("mao", 0).edit();
         edit.putBoolean("show_chord", showChord);
-        edit.commit();
+        edit.apply();
     }
 
-    public static void setDetailsController(DetailActivity detailActivity) {
-        Utils.detailActivity = detailActivity;
+    public static boolean isPlaying() {
+        return playing;
     }
 
-    public static DetailActivity getDetailActivity() {
-        return detailActivity;
+    public static void setPlaying(boolean playing) {
+        Utils.playing = playing;
     }
 
     public static final List<Integer> COLORS = List.of(com.google.android.material.R.attr.colorSurface, com.google.android.material.R.attr.colorPrimary, com.google.android.material.R.attr.colorSecondary, com.google.android.material.R.attr.colorTertiary, com.google.android.material.R.attr.colorError);

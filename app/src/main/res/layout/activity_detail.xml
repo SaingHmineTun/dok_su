@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:orientation="vertical">
 
 
@@ -91,7 +92,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@+id/mediaLayout"
+        app:layout_constraintBottom_toTopOf="@+id/llMedia"
         app:layout_constraintTop_toBottomOf="@+id/llCheckboxes">
 
         <TextView
@@ -104,74 +105,104 @@
             android:textSize="18sp" />
     </ScrollView>
 
+    <View
+        android:id="@+id/llMedia"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="4dp"
+        android:background="?colorPrimary"
+        app:layout_constraintBottom_toTopOf="@id/llSeekBar" />
 
     <LinearLayout
-        android:id="@+id/mediaLayout"
+        android:id="@+id/llSeekBar"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimary"
+        android:padding="5dp"
+        app:layout_constraintBottom_toTopOf="@id/mediaButtons">
+
+        <TextView
+            android:id="@+id/tv_start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time_start"
+            android:textColor="?colorOnPrimary" />
+
+        <SeekBar
+            android:id="@+id/seek_play"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/tv_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/time_start"
+            android:textColor="?colorOnPrimary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/mediaButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?colorPrimary"
+        android:baselineAligned="false"
+        android:gravity="center"
+
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
+
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="5dp">
+            android:layout_weight="1"
+            android:gravity="center">
 
-            <TextView
-                android:id="@+id/tv_start"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/time_start" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/fab_prev"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_circle"
+                android:contentDescription="@string/previous"
+                android:foreground="?actionBarItemBackground"
+                android:src="@drawable/ic_prev" />
 
-            <SeekBar
-                android:id="@+id/seek_play"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/tv_end"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/time_start" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/mediaButtons"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:gravity="center"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:id="@+id/llPlaySong"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center">
 
-            android:weightSum="3">
-
-            <ImageButton
-                android:id="@+id/fab_prev"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_previous_btn" />
-
-            <ImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/fab_play"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_pause_btn"
-                app:backgroundTint="@android:color/white" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_circle"
+                android:contentDescription="@string/play_or_pause"
+                android:foreground="?actionBarItemBackground"
+                android:src="@drawable/ic_pause" />
+        </LinearLayout>
 
-            <ImageButton
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/fab_next"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_next_btn" />
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_circle"
+                android:contentDescription="@string/next"
+                android:foreground="?actionBarItemBackground"
+                android:src="@drawable/ic_next" />
         </LinearLayout>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -28,6 +28,11 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_light_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_light_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_light_inversePrimary</item>
+
+        <!-- For Seek Bar -->
+        <item name="android:progressBackgroundTint">@color/md_theme_light_onPrimary</item>
+        <item name="android:progressTint">@color/md_theme_light_onPrimary</item>
+        <item name="android:thumbTint">@color/md_theme_light_onPrimary</item>
     </style>
 
     <style name="Theme.DokSu" parent="AppTheme" />

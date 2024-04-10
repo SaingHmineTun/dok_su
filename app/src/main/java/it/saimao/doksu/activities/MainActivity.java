@@ -39,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initPlayingFab() {
-
-        if (Utils.getPageNumber() == 0) {
+        if (!Utils.isPlaying()) {
             binding.fabPlaying.hide();
         } else {
             binding.fabPlaying.show();
@@ -50,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void initDokSuSongs() {
         DokSuAdapter dokSuAdapter = new DokSuAdapter(Utils.lyricTitles(), songNumber -> {
-
             Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
             intent.putExtra("number", songNumber);
             startActivity(intent);
@@ -73,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             binding.fabPlaying.hide();
             return;
         }
-        binding.fabPlaying.show();
+        initPlayingFab();
         setCurrentSong(Utils.getPageNumber());
     }
 
