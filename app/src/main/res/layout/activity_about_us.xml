@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activities.AboutUsActivity">
+
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarAboutUs"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="?colorPrimary">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/mAboutUs"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:icon="@drawable/ic_back_arrow"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="32dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:fontFamily="@font/aj_kunheing"
+                android:gravity="center_vertical"
+                android:text="@string/about_us_shan"
+                android:textColor="?colorOnPrimary"
+                android:textSize="26sp" />
+        </LinearLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_below="@id/toolbarAboutUs"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:contentDescription="@string/we_are_tmk_group"
+        android:scaleType="fitCenter"
+        android:src="@drawable/tmklogo" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageView"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/lySongsBy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            app:cardBackgroundColor="?colorSecondary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="15dp"
+                    android:contentDescription="@string/song_by"
+                    android:src="@drawable/ic_music" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/aj_kunheing"
+                    android:gravity="center_vertical"
+                    android:text="သဵင်ၵႂၢမ်း : "
+                    android:textColor="?colorOnSecondary"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:fontFamily="@font/aj_kunheing"
+                    android:gravity="center_vertical"
+                    android:text="ၵေႃလိၵ်ႈလၢႆးလႄႈ ၽိင်ႈငႄႈတႆး၊\nၸေႊဝဵင်းမူႇၸေႊ။"
+                    android:textColor="?colorOnSecondary"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/lyEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            app:cardBackgroundColor="?colorSecondary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="15dp"
+                    android:contentDescription="@string/contact_email"
+                    android:src="@drawable/ic_gmail" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/aj_kunheing"
+                    android:gravity="center_vertical"
+                    android:text="ဢီးမေးလ် : "
+                    android:textColor="?colorOnSecondary"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:fontFamily="@font/aj_kunheing"
+                    android:gravity="center_vertical"
+                    android:text="tmk.muse@gmail.com"
+                    android:textColor="?colorOnSecondary"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/lyFacebook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            app:cardBackgroundColor="?colorSecondary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="15dp"
+                    android:contentDescription="@string/contact_facebook"
+                    android:src="@drawable/ic_facebook" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/aj_kunheing"
+                    android:gravity="center_vertical"
+                    android:text="ၾဵတ်ႉပုၵ်ႉ : "
+                    android:textColor="?colorOnSecondary"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:fontFamily="@font/aj_kunheing"
+                    android:gravity="center_vertical"
+                    android:text="ထုင်ႉမၢဝ်းၶမ်း"
+                    android:textColor="?colorOnSecondary"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/lyPlayStore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="?colorSecondary">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="15dp"
+                    android:contentDescription="@string/rate_playstore"
+                    android:src="@drawable/ic_playstore" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginEnd="10dp"
+                    android:fontFamily="@font/aj_kunheing"
+                    android:gravity="center_vertical"
+                    android:text="ပၼ်ဢႅပ်းတုၵ်းသူးၼႆႉ လၢဝ်ႁႃႈလုၵ်ႈ!"
+                    android:textColor="?colorOnSecondary"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="@string/app_version"
+        android:textColor="?colorOnPrimaryContainer" />
+
+</RelativeLayout>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="actionButtonOverflow" parent="Widget.AppCompat.Light.ActionButton.Overflow">
-        <item name="android:tint">@color/white</item>
+        <item name="android:tint">@android:color/white</item>
     </style>
 </resources>
