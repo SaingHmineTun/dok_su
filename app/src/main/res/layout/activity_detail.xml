@@ -96,6 +96,7 @@
         app:layout_constraintTop_toBottomOf="@+id/llCheckboxes">
 
         <TextView
+            android:fontFamily="@font/namteng"
             android:id="@+id/readerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
