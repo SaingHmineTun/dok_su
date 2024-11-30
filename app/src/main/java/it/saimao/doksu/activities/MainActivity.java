@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d("Kham", "Main Activity On Restart");
         if (Utils.isReadMode(this)) {
             binding.fabPlaying.hide();
             return;

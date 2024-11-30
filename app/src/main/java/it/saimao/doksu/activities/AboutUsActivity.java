@@ -38,9 +38,9 @@ public class AboutUsActivity extends AppCompatActivity {
         Intent intent;
         if (index == 2) {
             try {
-                intent = new Intent("android.intent.action.VIEW", Uri.parse("fb://page/100377671433172"));
+                intent = new Intent("android.intent.action.VIEW", Uri.parse("fb://page/529740996878692"));
             } catch (Exception unused) {
-                intent = new Intent("android.intent.action.VIEW", Uri.parse("https://www.facebook.com/100377671433172"));
+                intent = new Intent("android.intent.action.VIEW", Uri.parse("https://www.facebook.com/529740996878692"));
             }
             startActivity(intent);
         } else if (index == 1) {
