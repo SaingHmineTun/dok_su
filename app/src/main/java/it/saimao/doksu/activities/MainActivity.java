@@ -2,11 +2,9 @@ package it.saimao.doksu.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 
 import it.saimao.doksu.adapters.DokSuAdapter;
 import it.saimao.doksu.databinding.ActivityMainBinding;
@@ -26,9 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private void initListeners() {
 
         binding.fabPlaying.setOnClickListener(view -> gotoCurrentPlayingSongPage());
-        binding.mAboutUs.setOnClickListener(v -> {
-            startActivity(new Intent(this, AboutUsActivity.class));
-        });
+        binding.mAboutUs.setOnClickListener(v -> startActivity(new Intent(this, AboutUsActivity.class)));
         Utils.playing.observeForever(isPlaying -> {
             if (isPlaying) {
                 binding.fabPlaying.setVisibility(View.VISIBLE);
@@ -36,9 +32,7 @@ public class MainActivity extends AppCompatActivity {
                 binding.fabPlaying.setVisibility(View.GONE);
             }
         });
-        Utils.pageNumber.observeForever(pageNumber -> {
-            binding.fabPlaying.setText(String.valueOf(pageNumber));
-        });
+        Utils.pageNumber.observeForever(pageNumber -> binding.fabPlaying.setText(String.valueOf(pageNumber)));
     }
 
     private void initDokSuSongs() {

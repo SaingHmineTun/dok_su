@@ -9,7 +9,6 @@ import android.util.TypedValue;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.io.BufferedReader;
@@ -18,7 +17,6 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import it.saimao.doksu.R;
-import it.saimao.doksu.activities.DetailActivity;
 
 public class Utils {
 

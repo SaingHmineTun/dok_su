@@ -1,22 +1,18 @@
 package it.saimao.doksu.utilities;
 
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
-import android.text.style.TypefaceSpan;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import java.lang.reflect.Type;
 
 public class DokSuTypefaceSpan extends MetricAffectingSpan {
     private final Typeface typeface;
     private final int textSize;
     private final float letterSpacing;
     private final int color;
+
     public DokSuTypefaceSpan(Typeface typeface, int textSize, float letterSpacing, int color) {
         this.typeface = typeface;
         this.textSize = textSize;
